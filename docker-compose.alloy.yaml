@@ -1,0 +1,18 @@
+services:
+  site:
+    image: node:22-alpine
+    working_dir: /workspace
+    network_mode: host
+    volumes:
+      - .:/workspace
+    environment:
+      PORT: 3000
+      IS_ALLOY: ${IS_ALLOY:-false}
+    command: node server.js
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3000/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 2s
+    restart: unless-stopped
