@@ -153,22 +153,77 @@
       .eyebrow-pill {
         display: inline-flex;
         align-items: center;
-        gap: 9px;
-        padding: 9px 18px;
-        border: 1px solid var(--line-strong);
-        border-radius: var(--pill);
-        background: #fff;
+        gap: 11px;
         font-size: 13px;
         font-weight: 500;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
       }
 
       .eyebrow-pill::before {
         content: "";
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
+        width: 7px;
+        height: 7px;
         background: var(--ink);
+      }
+
+      /* Bracket-cornered button */
+      .bracket {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 22px 52px;
+        border: 0;
+        background: none;
+        color: var(--ink);
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .bracket .corner {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 1.5px solid #000;
+        transition: opacity 0.22s ease;
+      }
+
+      .bracket .tl {
+        top: 0;
+        left: 26px;
+        border-right: 0;
+        border-bottom: 0;
+      }
+
+      .bracket .tr {
+        top: 0;
+        right: 26px;
+        border-left: 0;
+        border-bottom: 0;
+      }
+
+      .bracket .bl {
+        bottom: 0;
+        left: 26px;
+        border-right: 0;
+        border-top: 0;
+      }
+
+      .bracket .br {
+        bottom: 0;
+        right: 26px;
+        border-left: 0;
+        border-top: 0;
+      }
+
+      .bracket:hover .corner {
+        opacity: 0.4;
       }
 
       /* ---------- Header ---------- */
@@ -224,36 +279,32 @@
 
       /* ---------- Hero ---------- */
       .hero {
-        padding: 88px 0 0;
+        position: relative;
+        padding: 72px 0 0;
+        overflow: hidden;
       }
 
-      .hero__grid {
-        display: grid;
-        grid-template-columns: minmax(0, 0.62fr) minmax(0, 2fr) minmax(0, 0.62fr);
-        gap: 40px;
-        align-items: center;
-      }
-
-      .hero__side {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      .hero__side img {
-        width: 100%;
-        height: auto;
-        border-radius: var(--r-lg);
-        object-fit: cover;
-        aspect-ratio: 3 / 4;
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: repeating-linear-gradient(
+          to right,
+          rgba(18, 18, 18, 0.05) 0,
+          rgba(18, 18, 18, 0.05) 1px,
+          transparent 1px,
+          transparent 38px
+        );
+        pointer-events: none;
       }
 
       .hero__center {
+        position: relative;
         text-align: center;
       }
 
       .hero h1 {
-        margin: 28px auto 0;
+        margin: 26px auto 0;
         font-size: clamp(44px, 8.4vw, 118px);
         font-weight: 500;
         line-height: 0.96;
@@ -265,12 +316,24 @@
       }
 
       .hero__cta {
-        margin-top: 40px;
+        margin-top: 34px;
       }
 
       .hero__sub {
-        max-width: 720px;
-        margin: 34px auto 0;
+        max-width: 660px;
+        margin: 22px auto 0;
+      }
+
+      .hero__figure {
+        width: min(100%, 960px);
+        margin: 70px auto 0;
+      }
+
+      .hero__figure img {
+        width: 100%;
+        height: auto;
+        border-radius: var(--r-md) var(--r-md) 0 0;
+        object-fit: cover;
       }
 
       /* ---------- Section shell ---------- */
@@ -656,24 +719,12 @@
       }
 
       @media (max-width: 940px) {
-        .hero__grid {
-          grid-template-columns: minmax(0, 1fr);
-        }
-        .hero__side {
-          flex-direction: row;
-        }
-        .hero__side--right {
-          display: none;
-        }
-        .hero__side img {
-          aspect-ratio: 4 / 3;
+        .hero__figure {
+          margin-top: 52px;
         }
         .upload,
         .stages__grid {
           grid-template-columns: minmax(0, 1fr);
-        }
-        .nav {
-          display: none;
         }
       }
 
@@ -711,61 +762,48 @@
     </style>
   </head>
   <body>
-    <header class="site-header">
+    <header class="site-header" hidden>
       <div class="shell site-header__inner">
         <a class="brand" href="#top">
           <img src="/assets/logo.png" alt="" width="34" height="34" />
           Land Records
         </a>
-        <nav class="nav" aria-label="Primary">
-          <a href="#submit">Submit documents</a>
-          <a href="#platform">Platform</a>
-          <a href="#services">What we provide</a>
-          <a href="#stages">Stages</a>
-        </nav>
-        <a class="btn btn--sm" href="#submit">Get Started</a>
       </div>
     </header>
 
     <main id="top">
       <!-- 1. Hero -->
       <section class="hero">
-        <div class="shell hero__grid">
-          <div class="hero__side hero__side--left">
+        <div class="shell hero__center">
+          <p class="eyebrow-pill reveal">Help people see their land records digitally</p>
+          <h1>
+            <span class="word" style="--wd: 120ms">Scan</span>
+            <span class="word" style="--wd: 190ms">your</span>
+            <span class="word" style="--wd: 260ms">documents</span>
+            <span class="word" style="--wd: 330ms">for</span><br />
+            <span class="word" style="--wd: 400ms">verification.</span>
+          </h1>
+          <div class="hero__cta reveal" style="--d: 520ms">
+            <a class="bracket" href="#submit">
+              <span class="corner tl" aria-hidden="true"></span>
+              <span class="corner tr" aria-hidden="true"></span>
+              <span class="corner bl" aria-hidden="true"></span>
+              <span class="corner br" aria-hidden="true"></span>
+              Get Started
+            </a>
+          </div>
+          <p class="body-lg hero__sub reveal" style="--d: 600ms">
+            Land record digitization brings together secure scanning, precise indexing, and instant access —
+            so ownership records are easy to find, verify, and trust.
+          </p>
+          <figure class="hero__figure reveal" style="--d: 680ms">
             <img
-              src="/assets/hero-left.svg"
-              alt="Land surveyor recording measurements across open farmland"
-              width="520"
-              height="760"
+              src="/assets/hero-archive.png"
+              alt="Open filing cabinet drawer packed with tabbed paper land records in an archive"
+              width="920"
+              height="368"
             />
-          </div>
-
-          <div class="hero__center">
-            <p class="eyebrow-pill reveal">People</p>
-            <h1>
-              <span class="word" style="--wd: 120ms">Scan</span>
-              <span class="word" style="--wd: 190ms">your</span>
-              <span class="word" style="--wd: 260ms">documents</span>
-              <span class="word" style="--wd: 330ms">for</span><br />
-              <span class="word" style="--wd: 400ms">verification.</span>
-            </h1>
-            <div class="hero__cta reveal" style="--d: 520ms">
-              <a class="btn" href="#submit">Get Started</a>
-            </div>
-            <p class="body-lg hero__sub reveal" style="--d: 600ms">
-              Land record digitization brings together secure scanning, precise indexing, and instant access —
-              so ownership records are easy to find, verify, and trust.
-            </p>
-          </div>
-
-          <div class="hero__side hero__side--right">
-            <img
-              src="/assets/hero-right.svg"
-              alt="Shelves of bound property deed registers in a document archive"
-              width="520"
-              height="760"
-            />
-          </div>
+          </figure>
         </div>
       </section>
 
