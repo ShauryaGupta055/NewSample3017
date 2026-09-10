@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" width="900" height="1100" role="img">
+  <defs>
+    <pattern id="p" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0v28" fill="none" stroke="#c9c9c6" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="900" height="1100" fill="#dcdcd8"/>
+  <rect width="900" height="1100" fill="url(#p)"/>
+  <text x="450" y="550" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" fill="#8d8d88" letter-spacing="2">SCANNING & OCR</text>
+</svg>
