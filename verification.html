@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f7f7" />
+    <link rel="icon" href="/assets/logo.png" />
+    <title>Verification status — Land Record Digitization Platform</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --bg: #f7f7f7;
+        --ink: #121212;
+        --ink-72: rgba(18, 18, 18, 0.72);
+        --ink-52: rgba(18, 18, 18, 0.52);
+        --surface: #ffffff;
+        --panel: #f2f2f0;
+        --line: rgba(18, 18, 18, 0.1);
+        --line-strong: rgba(18, 18, 18, 0.18);
+        --gutter: 80px;
+        --shell: 1440px;
+        --r-sm: 14px;
+        --r-md: 18px;
+        --r-lg: 24px;
+        --pill: 100px;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Switzer", "General Sans", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 17px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      h1, h2, h3, h4 { margin: 0; font-weight: 500; }
+      p { margin: 0; }
+      img { display: block; max-width: 100%; }
+      a { color: inherit; }
+      button { font: inherit; color: inherit; }
+      [hidden] { display: none !important; }
+
+      .shell {
+        width: 100%;
+        max-width: var(--shell);
+        margin: 0 auto;
+        padding: 0 var(--gutter);
+      }
+
+      .label {
+        color: var(--ink-52);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .body { color: var(--ink-72); font-size: 16px; }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 13px 26px;
+        border: 1px solid transparent;
+        border-radius: var(--pill);
+        background: var(--ink);
+        color: #fff;
+        font-size: 15px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.22s ease;
+      }
+
+      .btn:hover { background: #2e2e2e; }
+
+      .btn--light {
+        background: var(--surface);
+        color: var(--ink);
+        border-color: var(--line-strong);
+      }
+
+      .btn--light:hover { background: #efefef; }
+
+      :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+      /* Header */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(247, 247, 247, 0.86);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .site-header__inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        height: 72px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        text-decoration: none;
+      }
+
+      .brand img { width: 30px; height: 30px; border-radius: 8px; object-fit: contain; }
+
+      main { padding: 48px 0 88px; }
+
+      /* Summary */
+      .topline {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+      }
+
+      .topline h1 {
+        margin-top: 12px;
+        font-size: clamp(30px, 4vw, 50px);
+        letter-spacing: -0.04em;
+        line-height: 1.04;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 18px;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--pill);
+        background: var(--surface);
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--ink);
+      }
+
+      .dot--live { animation: pulse 1.4s ease-in-out infinite; }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.25; }
+      }
+
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        background: var(--surface);
+      }
+
+      .card__value {
+        font-size: clamp(28px, 3vw, 40px);
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+
+      .card__label { color: var(--ink-72); font-size: 15px; }
+
+      /* Progress track */
+      .track-card {
+        margin-top: 20px;
+        padding: 28px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        background: var(--surface);
+      }
+
+      .track {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 20px;
+      }
+
+      .stage {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        background: var(--panel);
+      }
+
+      .stage__top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      .stage__mark {
+        display: grid;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        flex: 0 0 auto;
+        border: 1px solid var(--line-strong);
+        border-radius: 50%;
+        background: var(--surface);
+        font-size: 11px;
+      }
+
+      .stage[data-state="done"] { background: var(--surface); }
+      .stage[data-state="done"] .stage__mark { background: var(--ink); border-color: var(--ink); color: #fff; }
+      .stage[data-state="active"] { background: var(--surface); border-color: var(--ink); }
+      .stage[data-state="pending"] { opacity: 0.62; }
+
+      .stage__state { color: var(--ink-52); font-size: 13px; }
+
+      /* Documents */
+      .section-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 48px 0 20px;
+      }
+
+      .doc {
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        background: var(--surface);
+        overflow: hidden;
+      }
+
+      .doc + .doc { margin-top: 16px; }
+
+      .doc__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+        padding: 22px 26px;
+        border: 0;
+        background: none;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .doc__id {
+        padding: 6px 12px;
+        border-radius: var(--pill);
+        background: var(--panel);
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .doc__name {
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        word-break: break-word;
+      }
+
+      .doc__meta { color: var(--ink-52); font-size: 14px; }
+
+      .doc__right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-left: auto;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 14px;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--pill);
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      .pill--flag { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+      .chev {
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--panel);
+        transition: transform 0.25s ease;
+      }
+
+      .doc.is-open .chev { transform: rotate(180deg); }
+
+      .doc__panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
+      .doc.is-open .doc__panel { grid-template-rows: 1fr; }
+      .doc__inner { overflow: hidden; }
+
+      .doc__body {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+        gap: 24px;
+        padding: 4px 26px 26px;
+      }
+
+      .fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        background: var(--line);
+        overflow: hidden;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        padding: 14px 16px;
+        background: var(--surface);
+      }
+
+      .field dt { color: var(--ink-52); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+      .field dd { margin: 0; font-size: 16px; }
+
+      .checks {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 12px 14px;
+        border-radius: var(--r-sm);
+        background: var(--panel);
+        font-size: 15px;
+      }
+
+      .check svg { flex: 0 0 auto; }
+
+      .meter {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+
+      .meter__bar { height: 5px; border-radius: 5px; background: var(--panel); overflow: hidden; }
+      .meter__bar i { display: block; height: 100%; background: var(--ink); transition: width 0.7s ease; }
+
+      /* States */
+      .note {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-top: 24px;
+        padding: 18px 20px;
+        border: 1px dashed var(--line-strong);
+        border-radius: var(--r-md);
+        color: var(--ink-72);
+        font-size: 14px;
+      }
+
+      .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 44px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        background: var(--surface);
+      }
+
+      .skeleton {
+        height: 74px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        background: linear-gradient(90deg, #f4f4f2, #ececea, #f4f4f2);
+        background-size: 200% 100%;
+        animation: shimmer 1.4s linear infinite;
+      }
+
+      .skeleton + .skeleton { margin-top: 12px; }
+
+      @keyframes shimmer {
+        from { background-position: 200% 0; }
+        to { background-position: -200% 0; }
+      }
+
+      .site-footer { padding: 34px 0; border-top: 1px solid var(--line); }
+
+      .site-footer__inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        color: var(--ink-52);
+        font-size: 14px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .dot--live, .skeleton { animation: none; }
+        .doc__panel, .chev, .meter__bar i { transition: none; }
+      }
+
+      @media (max-width: 1180px) {
+        :root { --gutter: 44px; }
+        .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .track { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .doc__body { grid-template-columns: minmax(0, 1fr); }
+      }
+
+      @media (max-width: 680px) {
+        :root { --gutter: 22px; }
+        .summary, .track, .fields { grid-template-columns: minmax(0, 1fr); }
+        .doc__right { margin-left: 0; width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="brand" href="/">
+          <img src="/assets/logo.png" alt="" width="30" height="30" />
+          Land Records
+        </a>
+        <a class="btn btn--light" href="/#submit">Submit another batch</a>
+      </div>
+    </header>
+
+    <main>
+      <div class="shell">
+        <!-- Loading -->
+        <div id="loading">
+          <p class="label">Verification</p>
+          <h1 style="margin-top: 12px; font-size: 34px">Loading batch…</h1>
+          <div style="margin-top: 26px">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+          </div>
+        </div>
+
+        <!-- Missing / expired -->
+        <div id="missing" hidden>
+          <div class="empty">
+            <p class="label">Verification</p>
+            <h1 style="font-size: 32px; letter-spacing: -0.035em">This batch could not be found</h1>
+            <p class="body" style="max-width: 560px">
+              The reference is unknown or the batch has expired. Batches are held in memory for this
+              prototype, so they are cleared when the server restarts.
+            </p>
+            <a class="btn" href="/#submit">Submit documents again</a>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div id="result" hidden>
+          <div class="topline">
+            <div>
+              <p class="label">Verification status</p>
+              <h1 id="status-title">Verification in progress</h1>
+              <p class="body" style="margin-top: 10px">
+                Reference <strong id="reference">—</strong> · submitted <span id="submitted">—</span>
+              </p>
+            </div>
+            <span class="badge" id="status-badge">
+              <span class="dot dot--live" id="status-dot"></span>
+              <span id="status-text">Processing</span>
+            </span>
+          </div>
+
+          <div class="summary">
+            <div class="card">
+              <p class="card__value" id="t-docs">0</p>
+              <p class="card__label">Documents received</p>
+            </div>
+            <div class="card">
+              <p class="card__value" id="t-pages">0</p>
+              <p class="card__label">Pages extracted</p>
+            </div>
+            <div class="card">
+              <p class="card__value" id="t-verified">0</p>
+              <p class="card__label">Records verified</p>
+            </div>
+            <div class="card">
+              <p class="card__value" id="t-flagged">0</p>
+              <p class="card__label">Flagged for review</p>
+            </div>
+          </div>
+
+          <div class="track-card">
+            <p class="label">Pipeline</p>
+            <div class="track" id="track"></div>
+          </div>
+
+          <div class="section-head">
+            <div>
+              <p class="label">Extracted information</p>
+              <h2 style="margin-top: 10px; font-size: clamp(24px, 3vw, 36px); letter-spacing: -0.035em">
+                Fields read from your documents
+              </h2>
+            </div>
+            <p class="body" id="docs-hint">Select a document to expand its extracted fields.</p>
+          </div>
+
+          <div id="docs"></div>
+
+          <p class="note">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 8h.01M11 12h1v5h1" />
+            </svg>
+            <span>
+              <strong style="font-weight: 500">Prototype data.</strong> No OCR engine or registry database is
+              connected. Field values shown here are generated deterministically from each file name and size
+              so the interface can be reviewed end to end — they are not read from your documents.
+            </span>
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell site-footer__inner">
+        <span>© <span id="year">2026</span> Land Record Digitization Platform</span>
+        <a href="/">Back to the home page</a>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = String(new Date().getFullYear());
+
+      const params = new URLSearchParams(location.search);
+      const batchId = params.get("batch");
+      const loadingEl = document.getElementById("loading");
+      const missingEl = document.getElementById("missing");
+      const resultEl = document.getElementById("result");
+      const trackEl = document.getElementById("track");
+      const docsEl = document.getElementById("docs");
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      let timer = null;
+      let renderedDocs = 0;
+      const openState = new Set();
+
+      const show = (el) => {
+        [loadingEl, missingEl, resultEl].forEach((n) => (n.hidden = n !== el));
+      };
+
+      if (!batchId) {
+        show(missingEl);
+      } else {
+        poll();
+        timer = setInterval(poll, 1600);
+      }
+
+      async function poll() {
+        try {
+          const res = await fetch("/api/submissions/" + encodeURIComponent(batchId), {
+            headers: { accept: "application/json" },
+          });
+          if (res.status === 404) {
+            clearInterval(timer);
+            show(missingEl);
+            return;
+          }
+          if (!res.ok) throw new Error("Request failed: " + res.status);
+          const data = await res.json();
+          render(data);
+          if (data.complete) clearInterval(timer);
+        } catch (err) {
+          clearInterval(timer);
+          show(missingEl);
+        }
+      }
+
+      const tickIcon =
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>';
+      const warnIcon =
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 8v5M12 16.5h.01"/><circle cx="12" cy="12" r="9"/></svg>';
+
+      const fmtSize = (b) => {
+        if (b < 1024) return b + " B";
+        if (b < 1048576) return (b / 1024).toFixed(0) + " KB";
+        return (b / 1048576).toFixed(1) + " MB";
+      };
+
+      function render(data) {
+        show(resultEl);
+
+        document.getElementById("status-title").textContent = data.status;
+        document.getElementById("reference").textContent = data.reference;
+        document.getElementById("submitted").textContent = new Date(data.createdAt).toLocaleString();
+        document.getElementById("status-text").textContent = data.complete ? "Complete" : "Processing";
+        document.getElementById("status-dot").classList.toggle("dot--live", !data.complete && !reduced);
+
+        document.getElementById("t-docs").textContent = data.totals.documents;
+        document.getElementById("t-pages").textContent = data.totals.pages;
+        document.getElementById("t-verified").textContent = data.totals.verified;
+        document.getElementById("t-flagged").textContent = data.totals.flagged;
+
+        // Pipeline
+        trackEl.innerHTML = "";
+        data.stages.forEach((stage, i) => {
+          const el = document.createElement("div");
+          el.className = "stage";
+          el.dataset.state = stage.state;
+          el.innerHTML =
+            '<span class="stage__top"><span class="stage__mark">' +
+            (stage.state === "done" ? tickIcon : String(i + 1)) +
+            "</span>" +
+            stage.label +
+            '</span><span class="stage__state">' +
+            (stage.state === "done" ? "Done" : stage.state === "active" ? "In progress" : "Queued") +
+            "</span>";
+          trackEl.appendChild(el);
+        });
+
+        // Documents (only rebuild when the set changes, so open panels survive polling)
+        const hint = document.getElementById("docs-hint");
+        if (!data.documents.length) {
+          docsEl.innerHTML =
+            '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+          hint.textContent = "Extraction is still running.";
+          renderedDocs = 0;
+          return;
+        }
+
+        hint.textContent = "Select a document to expand its extracted fields.";
+        if (renderedDocs === data.documents.length) return;
+        renderedDocs = data.documents.length;
+        docsEl.innerHTML = "";
+
+        data.documents.forEach((doc, index) => {
+          const wrap = document.createElement("article");
+          wrap.className = "doc" + (openState.has(doc.id) || index === 0 ? " is-open" : "");
+          if (index === 0) openState.add(doc.id);
+
+          const flagged = doc.status !== "Verified";
+          const fields = doc.fields
+            .map(
+              (f) =>
+                '<div class="field"><dt>' +
+                f.label +
+                "</dt><dd>" +
+                f.value +
+                "</dd></div>"
+            )
+            .join("");
+
+          const checks = doc.checks
+            .map(
+              (c) =>
+                '<li class="check">' +
+                (c.ok ? tickIcon : warnIcon) +
+                "<span>" +
+                c.label +
+                "</span><strong style='margin-left:auto;font-weight:500;font-size:13px'>" +
+                (c.ok ? "Pass" : "Review") +
+                "</strong></li>"
+            )
+            .join("");
+
+          wrap.innerHTML =
+            '<button class="doc__head" type="button" aria-expanded="' +
+            (wrap.classList.contains("is-open") ? "true" : "false") +
+            '">' +
+            '<span class="doc__id">' +
+            doc.id +
+            "</span>" +
+            '<span><span class="doc__name">' +
+            doc.fileName +
+            '</span><br><span class="doc__meta">' +
+            fmtSize(doc.fileSize) +
+            " · " +
+            doc.pages +
+            (doc.pages === 1 ? " page" : " pages") +
+            "</span></span>" +
+            '<span class="doc__right">' +
+            '<span class="pill' +
+            (flagged ? " pill--flag" : "") +
+            '">' +
+            (flagged ? warnIcon : tickIcon) +
+            doc.status +
+            "</span>" +
+            '<span class="pill">' +
+            doc.confidence +
+            "% confidence</span>" +
+            '<span class="chev" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>' +
+            "</span></button>" +
+            '<div class="doc__panel"><div class="doc__inner"><div class="doc__body">' +
+            '<dl class="fields" style="margin:0">' +
+            fields +
+            "</dl>" +
+            "<div>" +
+            '<div class="meter"><span class="label">Extraction confidence</span>' +
+            '<span class="meter__bar"><i style="width:' +
+            doc.confidence +
+            '%"></i></span></div>' +
+            '<p class="label" style="margin-bottom:10px">Validation checks</p>' +
+            '<ul class="checks">' +
+            checks +
+            "</ul></div>" +
+            "</div></div></div>";
+
+          const head = wrap.querySelector(".doc__head");
+          head.addEventListener("click", () => {
+            const open = wrap.classList.toggle("is-open");
+            head.setAttribute("aria-expanded", String(open));
+            if (open) openState.add(doc.id);
+            else openState.delete(doc.id);
+          });
+
+          docsEl.appendChild(wrap);
+        });
+      }
+    </script>
+  </body>
+</html>

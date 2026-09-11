@@ -2202,14 +2202,33 @@
         if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
       });
 
-      form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (!files.length) return;
-        const n = files.length;
-        files = [];
-        render();
-        statusEl.textContent =
-          "Thank you — " + n + (n === 1 ? " file" : " files") + " received. Our team will confirm the next steps.";
+
+        submitBtn.disabled = true;
+        clearBtn.hidden = true;
+        submitBtn.textContent = "Submitting…";
+        statusEl.textContent = "Uploading " + files.length + (files.length === 1 ? " file…" : " files…");
+
+        try {
+          const res = await fetch("/api/submissions", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              files: files.map((f) => ({ name: f.name, size: f.size })),
+            }),
+          });
+          if (!res.ok) throw new Error("Request failed: " + res.status);
+          const data = await res.json();
+          statusEl.textContent = "Batch " + data.reference + " created. Opening verification status…";
+          window.location.href = "/verification?batch=" + encodeURIComponent(data.id);
+        } catch (err) {
+          submitBtn.disabled = false;
+          clearBtn.hidden = false;
+          submitBtn.textContent = "Submit Documents";
+          statusEl.textContent = "Could not reach the server. Please try again.";
+        }
       });
 
       render();
