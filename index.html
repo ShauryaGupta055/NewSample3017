@@ -1325,10 +1325,10 @@
               height="368"
             />
             <div class="hero__strip">
-              <div class="chip-stat"><strong>500+</strong><span>Land offices served</span></div>
+              <div class="chip-stat"><strong>Ongoing</strong><span>Land offices served</span></div>
               <div class="chip-stat"><strong>94%</strong><span>OCR model accuracy</span></div>
               <div class="chip-stat"><strong>5 mins</strong><span>Scan to verified record</span></div>
-              <div class="chip-stat"><strong>100%</strong><span>Audit-ready records</span></div>
+              <div class="chip-stat"><strong>Upcoming</strong><span>Audit-ready records</span></div>
             </div>
           </figure>
         </div>
@@ -1630,8 +1630,8 @@
           </div>
 
           <div class="stats" id="stats">
-            <div class="stat reveal" data-count="500" data-suffix="+" data-fill="82">
-              <p class="stat__value">0+</p>
+            <div class="stat reveal" data-fill="58">
+              <p class="stat__value">Ongoing</p>
               <p class="stat__label">Land offices served in India</p>
               <span class="stat__bar"><i></i></span>
             </div>
@@ -1645,9 +1645,9 @@
               <p class="stat__label">Average time from scan to verified record</p>
               <span class="stat__bar"><i></i></span>
             </div>
-            <div class="stat reveal" style="--d: 180ms" data-count="100" data-suffix="%" data-fill="100">
-              <p class="stat__value">0%</p>
-              <p class="stat__label">Total records secured in the digital archive</p>
+            <div class="stat reveal" style="--d: 180ms" data-fill="34">
+              <p class="stat__value">Upcoming</p>
+              <p class="stat__label">Audit-ready records</p>
               <span class="stat__bar"><i></i></span>
             </div>
           </div>
@@ -1884,11 +1884,13 @@
       /* ---------- Stat count-up + bars ---------- */
       const stats = Array.from(document.querySelectorAll(".stat"));
       const runStat = (el) => {
+        const bar = el.querySelector(".stat__bar i");
+        if (bar) bar.style.width = el.dataset.fill + "%";
+        // Cards without data-count carry a text value (e.g. "Ongoing") — leave it alone.
+        if (!el.dataset.count) return;
         const target = Number(el.dataset.count);
         const suffix = el.dataset.suffix || "";
         const valueEl = el.querySelector(".stat__value");
-        const bar = el.querySelector(".stat__bar i");
-        if (bar) bar.style.width = el.dataset.fill + "%";
         if (reduced) {
           valueEl.textContent = target + suffix;
           return;
