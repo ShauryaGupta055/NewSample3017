@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" width="720" height="520" fill="none" stroke="#121212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect width="720" height="520" fill="#f2f2f0" stroke="none"/>
+<rect x="64" y="60" width="592" height="400" rx="12" fill="#ffffff"/>
+<path d="M138 60v400" opacity="0.22" stroke-width="1.4"/>
+<path d="M212 60v400" opacity="0.22" stroke-width="1.4"/>
+<path d="M286 60v400" opacity="0.22" stroke-width="1.4"/>
+<path d="M360 60v400" opacity="0.22" stroke-width="1.4"/>
+<path d="M434 60v400" opacity="0.22" stroke-width="1.4"/>
+<path d="M508 60v400" opacity="0.22" stroke-width="1.4"/>
+<path d="M582 60v400" opacity="0.22" stroke-width="1.4"/>
+<path d="M64 126h592" opacity="0.22" stroke-width="1.4"/>
+<path d="M64 192h592" opacity="0.22" stroke-width="1.4"/>
+<path d="M64 258h592" opacity="0.22" stroke-width="1.4"/>
+<path d="M64 324h592" opacity="0.22" stroke-width="1.4"/>
+<path d="M64 390h592" opacity="0.22" stroke-width="1.4"/>
+<polygon points="128,132 292,118 306,246 138,256" fill="#e9e9e7" stroke-width="1.8"/>
+<polygon points="330,124 520,136 512,252 320,244" fill="#d6d6d3" stroke-width="1.8"/>
+<polygon points="150,286 330,278 342,396 160,404" fill="#e9e9e7" stroke-width="1.8"/>
+<polygon points="366,282 548,292 540,398 358,392" fill="#ffffff" stroke-width="1.8"/>
+<path d="M96 420c120-34 240 26 360-14s140 16 180 6" stroke-dasharray="7 9" opacity="0.6"/>
+<path d="M236 218c0 0-22-22-22-38a22 22 0 1 1 44 0c0 16-22 38-22 38z" fill="#ffffff"/>
+<circle cx="236" cy="180" r="7" fill="#121212" stroke="none"/>
+<path d="M424 214c0 0-22-22-22-38a22 22 0 1 1 44 0c0 16-22 38-22 38z" fill="#ffffff"/>
+<circle cx="424" cy="176" r="7" fill="#121212" stroke="none"/>
+<path d="M250 364c0 0-22-22-22-38a22 22 0 1 1 44 0c0 16-22 38-22 38z" fill="#ffffff"/>
+<circle cx="250" cy="326" r="7" fill="#121212" stroke="none"/>
+</svg>

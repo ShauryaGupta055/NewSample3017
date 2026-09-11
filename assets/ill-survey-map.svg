@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" width="720" height="520" fill="none" stroke="#121212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect width="720" height="520" fill="#f2f2f0" stroke="none"/>
+<rect x="60" y="56" width="600" height="408" rx="10" fill="#ffffff"/>
+<polygon points="96,96 260,86 276,206 104,214" fill="#e9e9e7" stroke="#121212" stroke-width="1.8"/>
+<text x="184" y="156" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#121212" stroke="none" opacity="0.72">127/2</text>
+<polygon points="260,86 430,92 442,200 276,206" fill="#ffffff" stroke="#121212" stroke-width="1.8"/>
+<text x="352" y="151" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#121212" stroke="none" opacity="0.72">128</text>
+<polygon points="430,92 624,100 620,214 442,200" fill="#d6d6d3" stroke="#121212" stroke-width="1.8"/>
+<text x="529" y="156" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#121212" stroke="none" opacity="0.72">129</text>
+<polygon points="104,214 276,206 288,340 112,346" fill="#ffffff" stroke="#121212" stroke-width="1.8"/>
+<text x="195" y="282" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#121212" stroke="none" opacity="0.72">131</text>
+<polygon points="276,206 442,200 452,332 288,340" fill="#e9e9e7" stroke="#121212" stroke-width="1.8"/>
+<text x="364" y="274" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#121212" stroke="none" opacity="0.72">132/1</text>
+<polygon points="442,200 620,214 616,344 452,332" fill="#ffffff" stroke="#121212" stroke-width="1.8"/>
+<text x="532" y="278" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#121212" stroke="none" opacity="0.72">133</text>
+<polygon points="112,346 288,340 300,440 120,444" fill="#d6d6d3" stroke="#121212" stroke-width="1.8"/>
+<text x="205" y="398" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#121212" stroke="none" opacity="0.72">140</text>
+<polygon points="288,340 452,332 470,436 300,440" fill="#ffffff" stroke="#121212" stroke-width="1.8"/>
+<text x="378" y="392" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#121212" stroke="none" opacity="0.72">141</text>
+<polygon points="452,332 616,344 612,442 470,436" fill="#e9e9e7" stroke="#121212" stroke-width="1.8"/>
+<text x="538" y="394" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#121212" stroke="none" opacity="0.72">142</text>
+<path d="M96 96 120 444" stroke-dasharray="6 8" opacity="0.5"/>
+<circle cx="640" cy="424" r="22" fill="#ffffff"/><path d="M640 410v28M626 424h28" opacity="0.7"/>
+</svg>

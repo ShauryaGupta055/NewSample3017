@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" width="720" height="520" fill="none" stroke="#121212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect width="720" height="520" fill="#f2f2f0" stroke="none"/>
+<rect x="72" y="68" width="576" height="384" rx="12" fill="#ffffff"/>
+<path d="M120 196h180v-64h-180z" fill="#e9e9e7"/>
+<path d="M140 152h140" stroke="#121212" stroke-width="2" opacity="0.55"/>
+<path d="M140 172h98" stroke="#121212" stroke-width="2" opacity="0.55"/>
+<rect x="120" y="220" width="180" height="112" rx="8" fill="#d6d6d3"/>
+<path d="M148 248h124M148 276h96M148 304h112" opacity="0.5"/>
+<rect x="348" y="132" width="252" height="200" rx="10" fill="#e9e9e7"/>
+<rect x="372" y="158" width="204" height="120" rx="6" fill="#ffffff"/>
+<path d="M396 188h156" opacity="0.5"/>
+<path d="M396 218h120" opacity="0.5"/>
+<path d="M396 248h140" opacity="0.5"/>
+<rect x="420" y="292" width="108" height="18" rx="9" fill="#ffffff"/>
+<path d="M96 384h528" stroke-width="3"/>
+<path d="M180 384v56M540 384v56" opacity="0.6"/>
+</svg>
