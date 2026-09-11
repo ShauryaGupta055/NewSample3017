@@ -25,7 +25,21 @@ const mimeTypes = {
  */
 const batches = new Map();
 const MAX_BATCHES = 200;
+const BATCH_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
 const STAGE_MS = 2600;
+
+// References stay unique even after old batches are evicted from the Map.
+let sequence = 0;
+
+// Drop stale batches so a long-running container does not hold them forever.
+const sweep = () => {
+  const cutoff = Date.now() - BATCH_TTL_MS;
+  for (const [id, batch] of batches) {
+    if (batch.createdAt < cutoff) batches.delete(id);
+  }
+};
+// unref() keeps this timer from holding the process open during shutdown.
+setInterval(sweep, 10 * 60 * 1000).unref();
 
 const VILLAGES = ["Rampur", "Kheri", "Bhagwanpur", "Sultanpur", "Chandpur", "Naugaon", "Mahuli", "Dhanaura"];
 const TEHSILS = ["Sadar", "Kairana", "Bilari", "Shahabad", "Nakur", "Chhata"];
@@ -124,9 +138,15 @@ const serialise = (batch) => {
   };
 };
 
+const BASE_HEADERS = {
+  "x-content-type-options": "nosniff",
+  "referrer-policy": "strict-origin-when-cross-origin",
+};
+
 const sendJson = (response, code, payload) => {
   const body = JSON.stringify(payload);
   response.writeHead(code, {
+    ...BASE_HEADERS,
     "cache-control": "no-store",
     "content-type": "application/json; charset=utf-8",
     "content-length": Buffer.byteLength(body),
@@ -134,24 +154,49 @@ const sendJson = (response, code, payload) => {
   response.end(body);
 };
 
-const sendHtml = (response, file) => {
+const sendText = (response, code, message, extra = {}) => {
+  response.writeHead(code, {
+    ...BASE_HEADERS,
+    ...extra,
+    "content-type": "text/plain; charset=utf-8",
+  });
+  response.end(message + "\n");
+};
+
+const sendHtml = (response, file, method) => {
   response.writeHead(200, {
+    ...BASE_HEADERS,
     "cache-control": "no-store",
     "content-type": "text/html; charset=utf-8",
   });
-  createReadStream(file).pipe(response);
+  if (method === "HEAD") {
+    response.end();
+    return;
+  }
+  const stream = createReadStream(file);
+  // Without this, a read error after headers are sent takes the process down.
+  stream.on("error", () => response.destroy());
+  stream.pipe(response);
 };
 
-const server = createServer((request, response) => {
+// Wrong method on a path that does exist should say so, not 404.
+const methodNotAllowed = (response, allow) =>
+  sendText(response, 405, "Method not allowed", { allow: allow.join(", ") });
+
+const handle = (request, response) => {
+  const method = request.method || "GET";
   const path = (request.url || "/").split("?")[0];
+  const isRead = method === "GET" || method === "HEAD";
 
   if (path === "/health") {
-    sendJson(response, 200, { status: "ok" });
-    return;
+    if (!isRead) return methodNotAllowed(response, ["GET", "HEAD"]);
+    return sendJson(response, 200, { status: "ok", batches: batches.size });
   }
 
   /* ---- Create a submission batch ---- */
-  if (path === "/api/submissions" && request.method === "POST") {
+  if (path === "/api/submissions") {
+    if (method !== "POST") return methodNotAllowed(response, ["POST"]);
+
     let raw = "";
     let tooBig = false;
 
@@ -164,7 +209,7 @@ const server = createServer((request, response) => {
     });
 
     request.on("end", () => {
-      if (tooBig) return;
+      if (tooBig || response.writableEnded) return;
       let payload;
       try {
         payload = JSON.parse(raw || "{}");
@@ -184,10 +229,10 @@ const server = createServer((request, response) => {
       }
 
       const id = randomUUID();
-      const seq = batches.size + 1;
+      sequence += 1;
       const batch = {
         id,
-        reference: "LRD-" + new Date().getFullYear() + "-" + String(seq).padStart(4, "0"),
+        reference: "LRD-" + new Date().getFullYear() + "-" + String(sequence).padStart(4, "0"),
         createdAt: Date.now(),
         documents: files.map(buildRecord),
       };
@@ -195,8 +240,7 @@ const server = createServer((request, response) => {
       batches.set(id, batch);
       // Keep the store bounded.
       if (batches.size > MAX_BATCHES) {
-        const oldest = batches.keys().next().value;
-        batches.delete(oldest);
+        batches.delete(batches.keys().next().value);
       }
 
       sendJson(response, 201, { id, reference: batch.reference });
@@ -205,46 +249,100 @@ const server = createServer((request, response) => {
   }
 
   /* ---- Read a submission batch ---- */
-  if (path.startsWith("/api/submissions/") && request.method === "GET") {
-    const id = path.slice("/api/submissions/".length);
+  if (path.startsWith("/api/submissions/")) {
+    if (!isRead) return methodNotAllowed(response, ["GET", "HEAD"]);
+
+    const id = decodeURIComponent(path.slice("/api/submissions/".length));
     const batch = batches.get(id);
     if (!batch) {
-      sendJson(response, 404, { error: "Batch not found. It may have expired." });
-      return;
+      return sendJson(response, 404, { error: "Batch not found. It may have expired." });
     }
-    sendJson(response, 200, serialise(batch));
-    return;
+    return sendJson(response, 200, serialise(batch));
+  }
+
+  // Anything else under /api should answer in JSON, not plain text.
+  if (path.startsWith("/api/")) {
+    return sendJson(response, 404, { error: "Unknown endpoint: " + path });
   }
 
   /* ---- Static assets ---- */
   if (path.startsWith("/assets/")) {
+    if (!isRead) return methodNotAllowed(response, ["GET", "HEAD"]);
+
     // basename() strips any directory traversal before touching the filesystem.
-    const file = join(assetsDir, basename(path));
+    const file = join(assetsDir, basename(decodeURIComponent(path)));
     const type = mimeTypes[extname(file).toLowerCase()];
 
     if (type && existsSync(file) && statSync(file).isFile()) {
+      const { size, mtimeMs } = statSync(file);
+      const etag = '"' + size.toString(16) + "-" + Math.round(mtimeMs).toString(16) + '"';
+
+      // Let the browser skip the download when nothing changed.
+      if (request.headers["if-none-match"] === etag) {
+        response.writeHead(304, { ...BASE_HEADERS, etag });
+        return response.end();
+      }
+
       response.writeHead(200, {
+        ...BASE_HEADERS,
         "cache-control": "public, max-age=3600",
         "content-type": type,
+        "content-length": size,
+        etag,
       });
-      createReadStream(file).pipe(response);
-      return;
+
+      if (method === "HEAD") return response.end();
+
+      const stream = createReadStream(file);
+      stream.on("error", () => response.destroy());
+      return stream.pipe(response);
     }
   }
 
   /* ---- Pages ---- */
   if (path === "/verification" || path === "/verification.html") {
-    sendHtml(response, verificationPath);
-    return;
+    if (!isRead) return methodNotAllowed(response, ["GET", "HEAD"]);
+    return sendHtml(response, verificationPath, method);
   }
 
   if (path === "/" || path === "/index.html") {
-    sendHtml(response, indexPath);
-    return;
+    if (!isRead) return methodNotAllowed(response, ["GET", "HEAD"]);
+    return sendHtml(response, indexPath, method);
   }
 
-  response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
-  response.end("Not found\n");
+  return sendText(response, 404, "Not found");
+};
+
+const server = createServer((request, response) => {
+  const started = Date.now();
+
+  response.on("finish", () => {
+    console.log(
+      `${request.method} ${request.url} -> ${response.statusCode} (${Date.now() - started}ms)`
+    );
+  });
+
+  // A throw inside a handler would otherwise take the whole process down.
+  try {
+    handle(request, response);
+  } catch (error) {
+    console.error("Request failed:", error);
+    if (!response.headersSent) {
+      sendJson(response, 500, { error: "Internal server error." });
+    } else {
+      response.destroy();
+    }
+  }
+});
+
+// Client aborts (navigating away mid-poll) must not be fatal.
+server.on("clientError", (error, socket) => {
+  if (socket.writable) socket.end("HTTP/1.1 400 Bad Request\r\n\r\n");
+});
+
+server.on("error", (error) => {
+  console.error("Server error:", error);
+  process.exit(1);
 });
 
 server.listen(port, "0.0.0.0", () => {
