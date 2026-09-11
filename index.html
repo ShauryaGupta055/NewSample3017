@@ -226,21 +226,49 @@
         opacity: 0.4;
       }
 
-      /* ---------- Header ---------- */
+      /* ---------- Header (floating translucent pill) ---------- */
       .site-header {
-        position: sticky;
-        top: 0;
-        z-index: 40;
-        background: var(--bg);
-        border-bottom: 1px solid var(--line);
+        position: fixed;
+        top: 18px;
+        left: 0;
+        right: 0;
+        z-index: 60;
+        display: flex;
+        justify-content: center;
+        padding: 0 20px;
+        pointer-events: none;
       }
 
       .site-header__inner {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 24px;
-        height: 76px;
+        gap: 28px;
+        width: 100%;
+        max-width: 980px;
+        height: 64px;
+        padding: 0 12px 0 20px;
+        border: 1px solid rgba(18, 18, 18, 0.07);
+        border-radius: var(--pill);
+        background: rgba(250, 250, 250, 0.62);
+        -webkit-backdrop-filter: blur(18px) saturate(170%);
+        backdrop-filter: blur(18px) saturate(170%);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 10px 30px rgba(18, 18, 18, 0.06);
+        pointer-events: auto;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease,
+          transform 0.3s ease;
+      }
+
+      .site-header.is-scrolled .site-header__inner {
+        background: rgba(250, 250, 250, 0.82);
+        border-color: rgba(18, 18, 18, 0.1);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 14px 38px rgba(18, 18, 18, 0.1);
+      }
+
+      @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+        .site-header__inner {
+          background: rgba(250, 250, 250, 0.95);
+        }
       }
 
       .brand {
@@ -251,11 +279,12 @@
         font-weight: 500;
         letter-spacing: -0.02em;
         text-decoration: none;
+        white-space: nowrap;
       }
 
       .brand img {
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
         border-radius: 8px;
         object-fit: contain;
       }
@@ -263,24 +292,27 @@
       .nav {
         display: flex;
         align-items: center;
-        gap: 32px;
-        font-size: 16px;
+        gap: 6px;
+        font-size: 15px;
       }
 
       .nav a {
+        padding: 9px 15px;
+        border-radius: var(--pill);
         color: var(--ink-72);
         text-decoration: none;
-        transition: color 0.2s ease;
+        transition: color 0.2s ease, background-color 0.2s ease;
       }
 
       .nav a:hover {
+        background: rgba(18, 18, 18, 0.06);
         color: var(--ink);
       }
 
       /* ---------- Hero ---------- */
       .hero {
         position: relative;
-        padding: 72px 0 0;
+        padding: 152px 0 0;
         overflow: hidden;
       }
 
@@ -339,6 +371,7 @@
       /* ---------- Section shell ---------- */
       section {
         padding: 104px 0;
+        scroll-margin-top: 104px;
       }
 
       .section-head {
@@ -726,6 +759,12 @@
         .stages__grid {
           grid-template-columns: minmax(0, 1fr);
         }
+        .nav {
+          display: none;
+        }
+        .site-header__inner {
+          max-width: 560px;
+        }
       }
 
       @media (max-width: 680px) {
@@ -736,7 +775,14 @@
           padding: 76px 0;
         }
         .hero {
-          padding-top: 56px;
+          padding-top: 124px;
+        }
+        .site-header {
+          top: 12px;
+        }
+        .site-header__inner {
+          height: 58px;
+          padding: 0 10px 0 16px;
         }
         .stats,
         .cards {
@@ -762,12 +808,19 @@
     </style>
   </head>
   <body>
-    <header class="site-header" hidden>
-      <div class="shell site-header__inner">
+    <header class="site-header" id="site-header">
+      <div class="site-header__inner">
         <a class="brand" href="#top">
-          <img src="/assets/logo.png" alt="" width="34" height="34" />
+          <img src="/assets/logo.png" alt="" width="30" height="30" />
           Land Records
         </a>
+        <nav class="nav" aria-label="Primary">
+          <a href="#submit">Submit</a>
+          <a href="#platform">Platform</a>
+          <a href="#services">What we provide</a>
+          <a href="#stages">Stages</a>
+        </nav>
+        <a class="btn btn--sm" href="#submit">Get Started</a>
       </div>
     </header>
 
@@ -1062,6 +1115,14 @@
     <script>
       // Year
       document.getElementById("year").textContent = String(new Date().getFullYear());
+
+      // Solidify the floating header slightly once the page is scrolled.
+      const header = document.getElementById("site-header");
+      const onScroll = () => {
+        header.classList.toggle("is-scrolled", window.scrollY > 12);
+      };
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
