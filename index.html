@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    :root { --night:#10151e; --night-2:#19212d; --cream:#f4f1ea; --orange:#f2a56e; --muted:#a8adb5; --line:rgba(255,255,255,.16); }
+    :root { --night:#10151e; --night-2:#19212d; --orange:#f2a56e; --muted:#a8adb5; --line:rgba(255,255,255,.16); }
     * { box-sizing:border-box; }
     html { scroll-behavior:smooth; }
     body { margin:0; background:var(--night); color:#f8f6f0; font-family:"DM Sans",sans-serif; -webkit-font-smoothing:antialiased; }
@@ -19,6 +19,10 @@
     a { color:inherit; text-decoration:none; }
     :focus-visible { outline:2px solid var(--orange); outline-offset:5px; }
     ::selection { background:var(--orange); color:var(--night); }
+    main { position:relative; overflow:hidden; background:radial-gradient(ellipse 850px 1100px at 92% 30%,rgba(85,96,132,.13),transparent 78%),radial-gradient(ellipse 800px 1100px at 3% 67%,rgba(175,103,92,.1),transparent 78%),var(--night); }
+    .cosmic-dust { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .dust-star { position:absolute; width:2px; height:2px; border-radius:50%; background:rgba(244,224,204,.56); box-shadow:0 0 8px rgba(244,195,155,.32); }
+    .ambient-section { background-image:radial-gradient(570px circle at var(--spot-x,50%) var(--spot-y,50%),rgba(242,165,110,.065),transparent 70%); }
     .progress { position:fixed; left:0; top:0; width:100%; height:3px; z-index:100; transform:scaleX(0); transform-origin:left; background:var(--orange); pointer-events:none; }
     .site-header { position:absolute; z-index:30; top:0; left:0; width:100%; display:flex; align-items:center; justify-content:space-between; padding:31px clamp(24px,5.2vw,88px); border-bottom:1px solid rgba(255,255,255,.12); }
     .brand { display:inline-flex; align-items:center; gap:12px; font-family:Manrope,sans-serif; font-size:23px; font-weight:800; letter-spacing:-.08em; line-height:1; }
@@ -100,30 +104,34 @@
     .scroll-cue .line:after { content:""; position:absolute; inset:0; background:var(--orange); transform:translateX(-100%); animation:scan 2.4s ease-in-out infinite; }
     @keyframes scan { to { transform:translateX(100%); } }
     .section-wrap { max-width:1500px; margin:auto; padding-left:clamp(24px,7vw,110px); padding-right:clamp(24px,7vw,110px); }
-    .intro { background:var(--cream); color:var(--night); padding-top:132px; padding-bottom:125px; }
+    .intro { position:relative; isolation:isolate; color:#f8f6f0; padding-top:150px; padding-bottom:145px; }
+    .intro:before { content:""; position:absolute; z-index:-1; width:630px; height:630px; top:-275px; left:-330px; border:1px solid rgba(245,191,153,.15); border-radius:50%; transform:rotate(-28deg) rotateX(57deg); box-shadow:0 0 0 38px rgba(242,165,110,.018),0 0 0 100px rgba(242,165,110,.012); pointer-events:none; }
     .intro-top { display:grid; grid-template-columns:1fr 1.4fr; gap:9%; align-items:start; }
-    .intro .eyebrow, .worlds .eyebrow { color:#9d684b; }
+    .intro .eyebrow, .worlds .eyebrow { color:var(--orange); }
     .intro h2, .worlds h2, .mission h2, .finale h2 { margin:0; font:600 clamp(42px,5.4vw,83px)/1.08 Manrope,sans-serif; letter-spacing:-.075em; }
     .intro h2 { max-width:690px; margin-top:-12px; }
-    .intro h2 em, .worlds h2 em { font-style:normal; color:#a76a4e; }
+    .intro h2 em, .worlds h2 em { font-style:normal; color:var(--orange); }
     .intro-copy { display:flex; justify-content:flex-end; margin-top:37px; }
-    .intro-copy p { max-width:485px; color:#61646a; font-size:16px; line-height:1.8; margin:0; }
-    .section-rule { border:0; border-top:1px solid #d5d0c7; margin:85px 0 0; }
+    .intro-copy p { max-width:485px; color:#b7bdc7; font-size:16px; line-height:1.8; margin:0; }
+    .section-rule { border:0; border-top:1px solid rgba(255,255,255,.17); margin:85px 0 0; }
     .intro-numbers { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; padding-top:32px; }
     .intro-numbers article { display:flex; flex-direction:column; gap:9px; }
     .intro-numbers strong { font:500 clamp(34px,4vw,61px)/1 Manrope,sans-serif; letter-spacing:-.08em; }
-    .intro-numbers span { color:#75777a; font-size:11px; font-weight:700; letter-spacing:.17em; text-transform:uppercase; }
-    .worlds { background:#e9e6df; color:var(--night); padding-top:125px; padding-bottom:135px; }
+    .intro-numbers span { color:#aeb4be; font-size:11px; font-weight:700; letter-spacing:.17em; text-transform:uppercase; }
+    .worlds { position:relative; isolation:isolate; color:#f8f6f0; padding-top:135px; padding-bottom:145px; }
+    .worlds:before { content:""; position:absolute; z-index:-1; width:700px; height:700px; right:-380px; top:-330px; border:1px solid rgba(175,193,220,.13); border-radius:50%; transform:rotate(26deg) rotateX(58deg); box-shadow:0 0 0 62px rgba(175,193,220,.012),0 0 0 125px rgba(175,193,220,.008); pointer-events:none; }
     .section-heading { display:flex; align-items:end; justify-content:space-between; gap:40px; margin:25px 0 52px; }
-    .section-heading p { max-width:310px; margin:0 0 7px; color:#656970; line-height:1.7; font-size:14px; }
+    .section-heading p { max-width:310px; margin:0 0 7px; color:#b0b7c2; line-height:1.7; font-size:14px; }
     .world-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
-    .world-card { position:relative; min-height:510px; overflow:hidden; color:#fff; background:#252a34; isolation:isolate; display:flex; flex-direction:column; justify-content:space-between; padding:26px; transform-style:preserve-3d; transition:box-shadow .35s,transform .35s; }
-    .world-card:hover { box-shadow:0 28px 55px rgba(28,32,39,.22); }
-    .world-card:nth-child(2) { background:#2d3040; }
-    .world-card:nth-child(3) { background:#242b33; }
+    .world-card { position:relative; min-height:510px; overflow:hidden; color:#fff; background:#222a35; border:1px solid rgba(255,255,255,.14); border-radius:12px; isolation:isolate; display:flex; flex-direction:column; justify-content:space-between; padding:26px; transform-style:preserve-3d; transition:box-shadow .35s,transform .35s,border-color .35s; }
+    .world-card:hover { border-color:rgba(242,165,110,.48); box-shadow:0 28px 60px rgba(0,0,0,.3),0 0 38px rgba(242,165,110,.08); }
+    .world-card:nth-child(2) { background:#242b3a; }
+    .world-card:nth-child(3) { background:#282c35; }
     .world-card:before { content:""; position:absolute; z-index:-2; inset:0; background:radial-gradient(circle at 50% 48%,rgba(191,124,98,.3),transparent 50%); }
     .world-card:nth-child(2):before { background:radial-gradient(circle at 50% 43%,rgba(159,152,199,.25),transparent 52%); }
     .world-card:nth-child(3):before { background:radial-gradient(circle at 50% 45%,rgba(198,168,115,.26),transparent 54%); }
+    .world-card:after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(260px circle at var(--card-x,50%) var(--card-y,50%),rgba(255,239,215,.13),transparent 70%); opacity:0; transition:opacity .3s; }
+    .world-card:hover:after { opacity:1; }
     .card-no { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#d8d8d9; }
     .card-bottom { display:flex; align-items:end; justify-content:space-between; gap:12px; z-index:3; transform:translateZ(15px); }
     .card-bottom small { display:block; color:#c6c6c8; font-size:10px; text-transform:uppercase; letter-spacing:.17em; margin-bottom:7px; }
@@ -138,8 +146,8 @@
     .card-planet.neptune:after { content:""; position:absolute; inset:0; border-radius:50%; background:repeating-linear-gradient(8deg,transparent 0 22px,rgba(187,228,220,.11) 26px 32px,transparent 38px 55px); }
     .card-planet.titan { background:radial-gradient(circle at 30% 26%,#f0d7a1,#b58b62 39%,#775b55 70%,#2f3039 98%); }
     .card-planet.titan:after { content:""; position:absolute; width:137%; height:37%; top:31%; left:-19%; border:12px solid rgba(225,192,143,.65); border-top-color:rgba(225,192,143,.17); border-radius:50%; transform:rotate(-24deg) rotateX(58deg); }
-    .world-footnote { margin-top:27px; display:flex; justify-content:space-between; gap:20px; color:#717477; text-transform:uppercase; letter-spacing:.16em; font-size:10px; }
-    .mission { background:var(--night); color:#f8f6f0; overflow:hidden; padding-top:130px; padding-bottom:145px; }
+    .world-footnote { margin-top:27px; display:flex; justify-content:space-between; gap:20px; color:#a0a8b4; text-transform:uppercase; letter-spacing:.16em; font-size:10px; }
+    .mission { position:relative; color:#f8f6f0; padding-top:135px; padding-bottom:150px; }
     .mission-head { display:grid; grid-template-columns:1fr 1fr; gap:10%; align-items:end; }
     .mission .eyebrow { color:var(--orange); margin-bottom:28px; }
     .mission h2 { max-width:680px; }
@@ -167,10 +175,12 @@
     .display-planet.neptune { background:radial-gradient(circle at 28% 24%,#b3d8dc,#547b9d 39%,#37455f 67%,#202938 97%); box-shadow:inset -30px -22px 60px rgba(9,14,24,.8),0 0 100px rgba(104,158,206,.2); }
     .display-planet.titan { background:radial-gradient(circle at 30% 26%,#f0d7a1,#b58b62 39%,#775b55 70%,#2f3039 98%); box-shadow:inset -30px -22px 60px rgba(9,14,24,.8),0 0 100px rgba(223,181,116,.18); }
     @keyframes slow-turn { to { transform:rotate(15deg) translateY(-8px); } }
-    .quote-band { padding:100px clamp(24px,7vw,110px); background:#d6a687; color:#22232a; text-align:center; }
-    .quote-band p { max-width:950px; margin:0 auto; font:500 clamp(33px,4.4vw,67px)/1.17 Manrope,sans-serif; letter-spacing:-.07em; }
-    .quote-band span { display:block; margin-top:35px; font-size:10px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; }
-    .finale { position:relative; min-height:650px; overflow:hidden; display:flex; align-items:center; background:#202633; }
+    .quote-band { position:relative; isolation:isolate; padding:160px clamp(24px,7vw,110px); color:#f8f6f0; text-align:center; }
+    .quote-band:before { content:""; position:absolute; z-index:-1; width:min(68vw,720px); aspect-ratio:1; left:50%; top:50%; transform:translate(-50%,-50%); border:1px solid rgba(242,165,110,.14); border-radius:50%; background:radial-gradient(circle,rgba(206,133,115,.12),rgba(80,83,121,.07) 46%,transparent 70%); box-shadow:0 0 0 75px rgba(242,165,110,.012),0 0 0 170px rgba(188,156,196,.009); pointer-events:none; }
+    .quote-band p { position:relative; max-width:950px; margin:0 auto; font:500 clamp(33px,4.4vw,67px)/1.17 Manrope,sans-serif; letter-spacing:-.07em; }
+    .quote-accent { color:var(--orange); }
+    .quote-credit { display:block; margin-top:35px; color:#c0c5cd; font-size:10px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; }
+    .finale { position:relative; min-height:650px; overflow:hidden; display:flex; align-items:center; }
     .finale:before { content:""; position:absolute; width:670px; aspect-ratio:1; right:-180px; bottom:-390px; border:1px solid rgba(255,255,255,.19); border-radius:50%; box-shadow:0 0 0 65px rgba(255,255,255,.025),0 0 0 150px rgba(255,255,255,.025),0 0 0 235px rgba(255,255,255,.018); }
     .finale .section-wrap { position:relative; z-index:2; width:100%; padding-top:100px; padding-bottom:100px; }
     .finale .eyebrow { color:var(--orange); margin-bottom:30px; }
@@ -189,6 +199,7 @@
     .footer-links { display:flex; gap:24px; }
     .reveal { opacity:0; transform:translateY(35px); transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1); }
     .reveal.visible { opacity:1; transform:translateY(0); }
+    .world-card.reveal.visible:hover { transform:perspective(900px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg)); }
     @media (max-width:1050px) {
       .nav-links { margin-left:0; gap:22px; }
       .hero-visual { right:-19%; width:78vw; opacity:.8; }
@@ -252,6 +263,7 @@
       html { scroll-behavior:auto; }
       *, *:before, *:after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
       .reveal { opacity:1; transform:none; }
+      .world-card.reveal.visible:hover { transform:none; }
     }
   </style>
 </head>
@@ -266,6 +278,7 @@
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
   </header>
   <main>
+    <div class="cosmic-dust" aria-hidden="true"></div>
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="stars" aria-hidden="true"></div>
       <div class="hero-visual" aria-hidden="true">
@@ -294,14 +307,14 @@
       <div class="hero-bottom"><div class="hero-index"><strong>01</strong><span>/ &nbsp; The beginning of everywhere</span></div><div class="scroll-cue">Scroll to explore <span class="line" aria-hidden="true"></span></div><span class="hero-side">An experience by elsewhere</span></div>
     </section>
 
-    <section class="intro section-wrap" id="about" aria-labelledby="about-title">
+    <section class="intro section-wrap ambient-section" id="about" aria-labelledby="about-title">
       <div class="intro-top reveal"><div class="eyebrow"><span class="dot"></span> A different perspective</div><h2 id="about-title">The universe is too beautiful to stay <em>still.</em></h2></div>
       <div class="intro-copy reveal"><p>Elsewhere is a digital field guide to impossible places. Part imagination, part exploration, and entirely an invitation to see the familiar in a new light. Your journey starts the moment you get curious.</p></div>
       <hr class="section-rule" />
       <div class="intro-numbers reveal"><article><strong>∞</strong><span>Possibilities</span></article><article><strong>03</strong><span>Worlds to discover</span></article><article><strong>01</strong><span>Place to begin: here</span></article></div>
     </section>
 
-    <section class="worlds section-wrap" id="worlds" aria-labelledby="worlds-title">
+    <section class="worlds section-wrap ambient-section" id="worlds" aria-labelledby="worlds-title">
       <div class="eyebrow reveal"><span class="dot"></span> Pick a direction</div>
       <div class="section-heading reveal"><h2 id="worlds-title">Where to <em>next?</em></h2><p>Three distant worlds. Three different ways to lose yourself in the extraordinary.</p></div>
       <div class="world-grid">
@@ -312,7 +325,7 @@
       <div class="world-footnote"><span>Imagined journeys / Real wonder</span><span>Choose a world to learn more</span></div>
     </section>
 
-    <section class="mission section-wrap" id="mission" aria-labelledby="mission-title">
+    <section class="mission section-wrap ambient-section" id="mission" aria-labelledby="mission-title">
       <div class="mission-head reveal"><div><div class="eyebrow"><span class="dot"></span> A closer look</div><h2 id="mission-title">Every world has a story.</h2></div><p>Select a destination and get lost in the details. No spaceship required, just a little imagination.</p></div>
       <div class="mission-stage reveal">
         <div class="mission-art" aria-label="Illustrated planet preview"><span class="cross">Fig. 01 / Planetary study</span><div class="display-planet" id="display-planet" aria-hidden="true"></div><span class="cross bottom">Elsewhere atlas / 2026</span></div>
@@ -326,9 +339,9 @@
       </div>
     </section>
 
-    <aside class="quote-band"><p class="reveal">“Somewhere, something incredible is waiting to be known.”</p><span class="reveal">Carl Sagan</span></aside>
+    <aside class="quote-band ambient-section"><p class="reveal">“Somewhere, something incredible is waiting to be <span class="quote-accent">known.</span>”</p><span class="quote-credit reveal">Carl Sagan</span></aside>
 
-    <section class="finale" id="explore" aria-labelledby="finale-title"><div class="section-wrap reveal"><div class="eyebrow"><span class="dot"></span> The journey is yours</div><h2 id="finale-title">Stay curious.<br><em>Go further.</em></h2><div class="finale-actions"><a class="pill-button" href="#worlds">Explore the worlds <span aria-hidden="true">↗</span></a><p>No tickets. No limits.<br>Just the wonder of what could be.</p></div></div></section>
+    <section class="finale ambient-section" id="explore" aria-labelledby="finale-title"><div class="section-wrap reveal"><div class="eyebrow"><span class="dot"></span> The journey is yours</div><h2 id="finale-title">Stay curious.<br><em>Go further.</em></h2><div class="finale-actions"><a class="pill-button" href="#worlds">Explore the worlds <span aria-hidden="true">↗</span></a><p>No tickets. No limits.<br>Just the wonder of what could be.</p></div></div></section>
   </main>
   <footer><a href="#top" class="brand" aria-label="Elsewhere back to top"><span class="brand-mark" aria-hidden="true"></span>elsewhere<span style="color:var(--orange)">.</span></a><p>Made for the endlessly curious.</p><div class="footer-links"><a href="#about">About</a><a href="#worlds">Destinations</a><a href="#top">Back to top ↑</a></div><p>© 2026 Elsewhere</p></footer>
   <script>
@@ -346,6 +359,15 @@
       star.style.setProperty('--duration', `${(random() * 4 + 2).toFixed(1)}s`);
       star.style.setProperty('--delay', `${(random() * -6).toFixed(1)}s`);
       stars.appendChild(star);
+    }
+    const dust = document.querySelector('.cosmic-dust');
+    for (let i = 0; i < 75; i++) {
+      const star = document.createElement('span');
+      star.className = 'dust-star';
+      star.style.left = `${(random() * 100).toFixed(2)}%`;
+      star.style.top = `${(17 + random() * 82).toFixed(2)}%`;
+      star.style.opacity = (random() * .55 + .2).toFixed(2);
+      dust.appendChild(star);
     }
 
     const revealObserver = new IntersectionObserver(entries => {
@@ -386,6 +408,28 @@
         system.style.setProperty('--ry','0deg'); system.style.setProperty('--rx','0deg');
         sceneObjects.style.setProperty('--px','0px'); sceneObjects.style.setProperty('--py','0px');
         fieldNote.style.setProperty('--note-x','0px'); fieldNote.style.setProperty('--note-y','0px');
+      });
+      document.querySelectorAll('.ambient-section').forEach(section => {
+        section.addEventListener('pointermove', event => {
+          const rect = section.getBoundingClientRect();
+          section.style.setProperty('--spot-x', `${event.clientX - rect.left}px`);
+          section.style.setProperty('--spot-y', `${event.clientY - rect.top}px`);
+        });
+      });
+      document.querySelectorAll('.world-card').forEach(card => {
+        card.addEventListener('pointermove', event => {
+          const rect = card.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width - .5;
+          const y = (event.clientY - rect.top) / rect.height - .5;
+          card.style.setProperty('--tilt-x', `${(-y * 7).toFixed(2)}deg`);
+          card.style.setProperty('--tilt-y', `${(x * 7).toFixed(2)}deg`);
+          card.style.setProperty('--card-x', `${event.clientX - rect.left}px`);
+          card.style.setProperty('--card-y', `${event.clientY - rect.top}px`);
+        });
+        card.addEventListener('pointerleave', () => {
+          card.style.setProperty('--tilt-x', '0deg');
+          card.style.setProperty('--tilt-y', '0deg');
+        });
       });
     }
 
