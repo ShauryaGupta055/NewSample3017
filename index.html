@@ -1,2237 +1,482 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f7f7f7" />
-    <link rel="icon" href="/assets/logo.png" />
-    <title>Land Record Digitization Platform</title>
-    <meta
-      name="description"
-      content="Scan, OCR, verify and map property ownership documents — secure land record digitization for Indian land offices and registries."
-    />
-    <style>
-      :root {
-        --bg: #f7f7f7;
-        --ink: #121212;
-        --ink-72: rgba(18, 18, 18, 0.72);
-        --ink-52: rgba(18, 18, 18, 0.52);
-        --surface: #ffffff;
-        --panel: #f2f2f0;
-        --line: rgba(18, 18, 18, 0.1);
-        --line-strong: rgba(18, 18, 18, 0.18);
-        --gutter: 80px;
-        --shell: 1440px;
-        --r-sm: 14px;
-        --r-md: 18px;
-        --r-lg: 24px;
-        --pill: 100px;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-        -webkit-text-size-adjust: 100%;
-      }
-
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--ink);
-        font-family: "Switzer", "General Sans", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 18px;
-        line-height: 1.5;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      h1,
-      h2,
-      h3,
-      h4 {
-        margin: 0;
-        font-weight: 500;
-      }
-
-      p {
-        margin: 0;
-      }
-
-      img {
-        display: block;
-        max-width: 100%;
-      }
-
-      a {
-        color: inherit;
-      }
-
-      button {
-        font: inherit;
-        color: inherit;
-      }
-
-      [hidden] {
-        display: none !important;
-      }
-
-      .shell {
-        width: 100%;
-        max-width: var(--shell);
-        margin: 0 auto;
-        padding: 0 var(--gutter);
-      }
-
-      /* ---------- Type ---------- */
-      .label {
-        margin: 0;
-        color: var(--ink-52);
-        font-size: 12px;
-        font-weight: 500;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-      }
-
-      .body-lg {
-        color: var(--ink-72);
-        font-size: 22px;
-        line-height: 1.42;
-        letter-spacing: -0.01em;
-      }
-
-      .body {
-        color: var(--ink-72);
-        font-size: 16px;
-        line-height: 1.55;
-      }
-
-      .h2 {
-        font-size: clamp(32px, 4.6vw, 60px);
-        font-weight: 500;
-        line-height: 1.02;
-        letter-spacing: -0.035em;
-      }
-
-      /* ---------- Buttons ---------- */
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 9px;
-        padding: 15px 30px;
-        border: 1px solid transparent;
-        border-radius: var(--pill);
-        background: var(--ink);
-        color: #fff;
-        font-size: 16px;
-        font-weight: 500;
-        text-decoration: none;
-        cursor: pointer;
-        transition: background-color 0.22s ease, border-color 0.22s ease, color 0.22s ease;
-      }
-
-      .btn:hover {
-        background: #2e2e2e;
-      }
-
-      .btn--light {
-        background: var(--surface);
-        color: var(--ink);
-        border-color: var(--line-strong);
-      }
-
-      .btn--light:hover {
-        background: #efefef;
-      }
-
-      .btn--sm {
-        padding: 11px 22px;
-        font-size: 15px;
-      }
-
-      .btn[disabled] {
-        opacity: 0.45;
-        cursor: not-allowed;
-      }
-
-      :focus-visible {
-        outline: 2px solid var(--ink);
-        outline-offset: 3px;
-      }
-
-      /* ---------- Header ---------- */
-      .site-header {
-        position: fixed;
-        top: 18px;
-        left: 0;
-        right: 0;
-        z-index: 60;
-        display: flex;
-        justify-content: center;
-        padding: 0 20px;
-        pointer-events: none;
-      }
-
-      .site-header__inner {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        width: 100%;
-        max-width: 1000px;
-        height: 64px;
-        padding: 0 10px 0 20px;
-        border: 1px solid rgba(18, 18, 18, 0.07);
-        border-radius: var(--pill);
-        background: rgba(250, 250, 250, 0.62);
-        -webkit-backdrop-filter: blur(18px) saturate(170%);
-        backdrop-filter: blur(18px) saturate(170%);
-        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 10px 30px rgba(18, 18, 18, 0.06);
-        pointer-events: auto;
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      .site-header.is-scrolled .site-header__inner {
-        background: rgba(250, 250, 250, 0.86);
-        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 14px 38px rgba(18, 18, 18, 0.1);
-      }
-
-      @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-        .site-header__inner {
-          background: rgba(250, 250, 250, 0.96);
-        }
-      }
-
-      .brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 16px;
-        font-weight: 500;
-        letter-spacing: -0.02em;
-        text-decoration: none;
-        white-space: nowrap;
-      }
-
-      .brand img {
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        object-fit: contain;
-      }
-
-      .nav {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 15px;
-      }
-
-      .nav a {
-        padding: 9px 14px;
-        border-radius: var(--pill);
-        color: var(--ink-72);
-        text-decoration: none;
-        transition: color 0.2s ease, background-color 0.2s ease;
-      }
-
-      .nav a:hover {
-        background: rgba(18, 18, 18, 0.06);
-        color: var(--ink);
-      }
-
-      .nav a.is-active {
-        background: rgba(18, 18, 18, 0.09);
-        color: var(--ink);
-      }
-
-      /* ---------- Sections ---------- */
-      section {
-        padding: 96px 0;
-        scroll-margin-top: 100px;
-      }
-
-      .section-head {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 24px;
-        margin-bottom: 36px;
-      }
-
-      .section-head__text {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        max-width: 760px;
-      }
-
-      /* ---------- Hero ---------- */
-      .hero {
-        position: relative;
-        padding: 148px 0 96px;
-        overflow: hidden;
-      }
-
-      .hero::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image: repeating-linear-gradient(
-          to right,
-          rgba(18, 18, 18, 0.05) 0,
-          rgba(18, 18, 18, 0.05) 1px,
-          transparent 1px,
-          transparent 38px
-        );
-        pointer-events: none;
-      }
-
-      .hero__center {
-        position: relative;
-        text-align: center;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 11px;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-      }
-
-      .eyebrow::before {
-        content: "";
-        width: 7px;
-        height: 7px;
-        background: var(--ink);
-      }
-
-      .hero h1 {
-        margin: 24px auto 0;
-        font-size: clamp(44px, 8vw, 112px);
-        line-height: 0.96;
-        letter-spacing: -0.049em;
-      }
-
-      .hero h1 .word {
-        display: inline-block;
-      }
-
-      .hero__cta {
-        margin-top: 30px;
-      }
-
-      .bracket {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 22px 52px;
-        border: 0;
-        background: none;
-        font-size: 15px;
-        font-weight: 500;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        text-decoration: none;
-        cursor: pointer;
-      }
-
-      .bracket .corner {
-        position: absolute;
-        width: 14px;
-        height: 14px;
-        border: 1.5px solid #000;
-        transition: opacity 0.22s ease;
-      }
-
-      .bracket .tl { top: 0; left: 26px; border-right: 0; border-bottom: 0; }
-      .bracket .tr { top: 0; right: 26px; border-left: 0; border-bottom: 0; }
-      .bracket .bl { bottom: 0; left: 26px; border-right: 0; border-top: 0; }
-      .bracket .br { bottom: 0; right: 26px; border-left: 0; border-top: 0; }
-
-      .bracket:hover .corner {
-        opacity: 0.4;
-      }
-
-      .hero__sub {
-        max-width: 640px;
-        margin: 20px auto 0;
-      }
-
-      .hero__figure {
-        position: relative;
-        width: min(100%, 1020px);
-        margin: 56px auto 0;
-        padding: 12px;
-        border: 1px solid var(--line);
-        border-radius: var(--r-lg);
-        background: var(--surface);
-      }
-
-      .hero__figure img {
-        width: 100%;
-        height: auto;
-        border-radius: var(--r-md);
-      }
-
-      .hero__strip {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-        margin-top: 12px;
-      }
-
-      .chip-stat {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        padding: 14px 16px;
-        border-radius: var(--r-sm);
-        background: var(--panel);
-        text-align: left;
-      }
-
-      .chip-stat strong {
-        font-size: 20px;
-        font-weight: 500;
-        letter-spacing: -0.03em;
-      }
-
-      .chip-stat span {
-        color: var(--ink-52);
-        font-size: 13px;
-      }
-
-      /* ---------- Generic card ---------- */
-      .card {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 26px;
-        border: 1px solid var(--line);
-        border-radius: var(--r-md);
-        background: var(--surface);
-        text-align: left;
-        transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
-      }
-
-      .card--interactive {
-        cursor: pointer;
-        width: 100%;
-      }
-
-      .card--interactive:hover,
-      .card--interactive:focus-visible {
-        border-color: var(--line-strong);
-        box-shadow: 0 14px 34px rgba(18, 18, 18, 0.08);
-      }
-
-      .card__eyebrow {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        color: var(--ink-52);
-        font-size: 12px;
-        font-weight: 500;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-      }
-
-      .card h3 {
-        font-size: 21px;
-        letter-spacing: -0.028em;
-      }
-
-      .card__foot {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: auto;
-        padding-top: 6px;
-        color: var(--ink);
-        font-size: 14px;
-        font-weight: 500;
-      }
-
-      .card__foot svg {
-        transition: transform 0.22s ease;
-      }
-
-      .card--interactive:hover .card__foot svg {
-        transform: translateX(4px);
-      }
-
-      /* ---------- Upload ---------- */
-      .upload-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
-        gap: 20px;
-        align-items: stretch;
-      }
-
-      .upload-aside {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        padding: 32px;
-        border: 1px solid var(--line);
-        border-radius: var(--r-lg);
-        background: var(--surface);
-      }
-
-      .facts {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin: auto 0 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .facts li {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 16px;
-        border-radius: var(--r-sm);
-        background: var(--panel);
-        font-size: 15px;
-      }
-
-      .facts strong {
-        margin-left: auto;
-        font-weight: 500;
-      }
-
-      .upload-panel {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        padding: 32px;
-        border: 1px solid var(--line);
-        border-radius: var(--r-lg);
-        background: var(--surface);
-      }
-
-      .dropzone {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        padding: 34px 24px;
-        border: 1px dashed var(--line-strong);
-        border-radius: var(--r-md);
-        background: #fbfbfb;
-        text-align: center;
-        transition: background-color 0.2s ease, border-color 0.2s ease;
-      }
-
-      .dropzone.is-drag {
-        border-color: var(--ink);
-        background: #f0f0ef;
-      }
-
-      .dropzone__icon {
-        display: grid;
-        place-items: center;
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        background: #efefee;
-      }
-
-      .dropzone h3 {
-        font-size: 19px;
-        letter-spacing: -0.02em;
-      }
-
-      .hint {
-        color: var(--ink-52);
-        font-size: 14px;
-      }
-
-      input[type="file"] {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-        white-space: nowrap;
-      }
-
-      .filelist {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .filelist:empty {
-        display: none;
-      }
-
-      .filechip {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 8px 8px 14px;
-        border: 1px solid var(--line);
-        border-radius: var(--pill);
-        background: var(--panel);
-        font-size: 14px;
-      }
-
-      .filechip button {
-        display: grid;
-        place-items: center;
-        width: 22px;
-        height: 22px;
-        padding: 0;
-        border: 0;
-        border-radius: 50%;
-        background: rgba(18, 18, 18, 0.08);
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-      }
-
-      .filechip button:hover {
-        background: rgba(18, 18, 18, 0.18);
-      }
-
-      .upload-actions {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .status {
-        margin: 0;
-        color: var(--ink-72);
-        font-size: 14px;
-      }
-
-      /* ---------- Accordion (platform) ---------- */
-      .accordion {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 20px;
-      }
-
-      .acc {
-        border: 1px solid var(--line);
-        border-radius: var(--r-md);
-        background: var(--surface);
-        overflow: hidden;
-        transition: border-color 0.22s ease, box-shadow 0.22s ease;
-      }
-
-      .acc:hover {
-        border-color: var(--line-strong);
-      }
-
-      .acc.is-open {
-        border-color: var(--line-strong);
-        box-shadow: 0 14px 34px rgba(18, 18, 18, 0.07);
-      }
-
-      .acc__btn {
-        display: flex;
-        align-items: flex-start;
-        gap: 18px;
-        width: 100%;
-        padding: 26px;
-        border: 0;
-        background: none;
-        text-align: left;
-        cursor: pointer;
-      }
-
-      .acc__num {
-        color: var(--ink-52);
-        font-size: 12px;
-        font-weight: 500;
-        letter-spacing: 0.16em;
-        padding-top: 5px;
-      }
-
-      .acc__head {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-
-      .acc__head h3 {
-        font-size: 21px;
-        letter-spacing: -0.028em;
-      }
-
-      .acc__sign {
-        position: relative;
-        flex: 0 0 auto;
-        width: 26px;
-        height: 26px;
-        margin-left: auto;
-        border-radius: 50%;
-        background: var(--panel);
-      }
-
-      .acc__sign::before,
-      .acc__sign::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 11px;
-        height: 1.5px;
-        background: var(--ink);
-        transform: translate(-50%, -50%);
-        transition: transform 0.25s ease, opacity 0.25s ease;
-      }
-
-      .acc__sign::after {
-        transform: translate(-50%, -50%) rotate(90deg);
-      }
-
-      .acc.is-open .acc__sign::after {
-        opacity: 0;
-        transform: translate(-50%, -50%) rotate(0deg);
-      }
-
-      .acc__panel {
-        display: grid;
-        grid-template-rows: 0fr;
-        transition: grid-template-rows 0.32s ease;
-      }
-
-      .acc.is-open .acc__panel {
-        grid-template-rows: 1fr;
-      }
-
-      .acc__inner {
-        overflow: hidden;
-      }
-
-      .acc__body {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 0 26px 26px 70px;
-      }
-
-      .taglist {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 4px 0 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .taglist li {
-        padding: 7px 14px;
-        border-radius: var(--pill);
-        background: var(--panel);
-        color: var(--ink-72);
-        font-size: 13px;
-      }
-
-      /* ---------- Transition + gallery ---------- */
-      .split {
-        display: grid;
-        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-        gap: 20px;
-        align-items: start;
-      }
-
-      .figure-card {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        padding: 24px;
-        border: 1px solid var(--line);
-        border-radius: var(--r-lg);
-        background: var(--surface);
-      }
-
-      .figure-card img {
-        width: 100%;
-        height: auto;
-        padding: 14px;
-        border-radius: var(--r-md);
-        background: var(--panel);
-      }
-
-      .figure-card figcaption {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        color: var(--ink-72);
-        font-size: 15px;
-      }
-
-      .stack-cards {
-        display: grid;
-        gap: 20px;
-      }
-
-      .gallery {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-      }
-
-      .tile {
-        display: flex;
-        flex-direction: column;
-        margin: 0;
-        padding: 0;
-        border: 1px solid var(--line);
-        border-radius: var(--r-md);
-        background: var(--surface);
-        overflow: hidden;
-        cursor: pointer;
-        text-align: left;
-        transition: border-color 0.22s ease, box-shadow 0.22s ease;
-      }
-
-      .tile:hover,
-      .tile:focus-visible {
-        border-color: var(--line-strong);
-        box-shadow: 0 14px 34px rgba(18, 18, 18, 0.08);
-      }
-
-      .tile img {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 720 / 520;
-        object-fit: cover;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .tile__body {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-        gap: 7px;
-        padding: 20px 22px 22px;
-      }
-
-      .tile__body strong {
-        font-size: 18px;
-        font-weight: 500;
-        letter-spacing: -0.025em;
-      }
-
-      /* ---------- Stats ---------- */
-      .stats {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 20px;
-      }
-
-      .stat {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 26px;
-        border: 1px solid var(--line);
-        border-radius: var(--r-md);
-        background: var(--surface);
-      }
-
-      .stat__value {
-        font-size: clamp(34px, 3.8vw, 50px);
-        font-weight: 500;
-        line-height: 1;
-        letter-spacing: -0.045em;
-      }
-
-      .stat__label {
-        color: var(--ink-72);
-        font-size: 15px;
-      }
-
-      .stat__bar {
-        height: 3px;
-        margin-top: auto;
-        border-radius: 3px;
-        background: var(--panel);
-        overflow: hidden;
-      }
-
-      .stat__bar i {
-        display: block;
-        height: 100%;
-        width: 0;
-        background: var(--ink);
-        transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);
-      }
-
-      /* ---------- Services ---------- */
-      .cards-3 {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-      }
-
-      .service {
-        display: flex;
-        flex-direction: column;
-        border: 1px solid var(--line);
-        border-radius: var(--r-lg);
-        background: var(--surface);
-        overflow: hidden;
-        cursor: pointer;
-        text-align: left;
-        padding: 0;
-        transition: border-color 0.22s ease, box-shadow 0.22s ease;
-      }
-
-      .service:hover,
-      .service:focus-visible {
-        border-color: var(--line-strong);
-        box-shadow: 0 16px 38px rgba(18, 18, 18, 0.08);
-      }
-
-      .service img {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 720 / 460;
-        object-fit: cover;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .service__body {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-        gap: 11px;
-        padding: 26px;
-      }
-
-      .service h3 {
-        font-size: 23px;
-        letter-spacing: -0.03em;
-      }
-
-      /* ---------- Stages ---------- */
-      .steps {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 20px;
-      }
-
-      .step {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 26px;
-        border: 1px solid var(--line);
-        border-radius: var(--r-md);
-        background: var(--surface);
-        text-align: left;
-        cursor: pointer;
-        transition: border-color 0.22s ease, box-shadow 0.22s ease;
-      }
-
-      .step:hover,
-      .step:focus-visible,
-      .step.is-active {
-        border-color: var(--line-strong);
-        box-shadow: 0 14px 34px rgba(18, 18, 18, 0.08);
-      }
-
-      .step.is-active {
-        background: var(--surface);
-      }
-
-      .step__num {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: var(--panel);
-        font-size: 13px;
-        font-weight: 500;
-      }
-
-      .step.is-active .step__num {
-        background: var(--ink);
-        color: #fff;
-      }
-
-      .step h3 {
-        font-size: 19px;
-        letter-spacing: -0.025em;
-      }
-
-      .detail {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-        gap: 28px;
-        align-items: center;
-        margin-top: 20px;
-        padding: 28px;
-        border: 1px solid var(--line);
-        border-radius: var(--r-lg);
-        background: var(--surface);
-      }
-
-      .detail img {
-        width: 100%;
-        height: auto;
-        border-radius: var(--r-md);
-        background: var(--panel);
-      }
-
-      .detail__text {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-      }
-
-      .detail__text h3 {
-        font-size: clamp(24px, 2.6vw, 34px);
-        letter-spacing: -0.03em;
-      }
-
-      /* ---------- Marquee ---------- */
-      .marquee-card {
-        margin-top: 20px;
-        padding: 24px 0;
-        border: 1px solid var(--line);
-        border-radius: var(--r-lg);
-        background: var(--surface);
-        overflow: hidden;
-      }
-
-      .marquee {
-        overflow: hidden;
-        mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
-        -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
-      }
-
-      .marquee__track {
-        display: flex;
-        gap: 16px;
-        width: max-content;
-        padding: 0 16px;
-        animation: marquee 46s linear infinite;
-      }
-
-      .marquee:hover .marquee__track,
-      .marquee:focus-within .marquee__track {
-        animation-play-state: paused;
-      }
-
-      .marquee figure {
-        width: 264px;
-        margin: 0;
-        flex: 0 0 auto;
-      }
-
-      .marquee img {
-        width: 100%;
-        height: 176px;
-        border: 1px solid var(--line);
-        border-radius: var(--r-sm);
-        object-fit: cover;
-        background: var(--panel);
-      }
-
-      .marquee figcaption {
-        margin-top: 10px;
-        color: var(--ink-72);
-        font-size: 14px;
-      }
-
-      .marquee-card__foot {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin-top: 18px;
-        color: var(--ink-52);
-        font-size: 13px;
-      }
-
-      @keyframes marquee {
-        from { transform: translateX(0); }
-        to { transform: translateX(-50%); }
-      }
-
-      /* ---------- CTA ---------- */
-      .cta-card {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
-        gap: 36px;
-        align-items: center;
-        padding: clamp(28px, 4vw, 56px);
-        border: 1px solid var(--line);
-        border-radius: var(--r-lg);
-        background: var(--surface);
-      }
-
-      .cta-card h2 {
-        font-size: clamp(30px, 3.8vw, 48px);
-        letter-spacing: -0.035em;
-        line-height: 1.04;
-      }
-
-      .cta-actions {
-        display: grid;
-        gap: 12px;
-      }
-
-      .action {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 20px 22px;
-        border: 1px solid var(--line);
-        border-radius: var(--r-md);
-        background: var(--panel);
-        text-decoration: none;
-        transition: background-color 0.22s ease, border-color 0.22s ease;
-      }
-
-      .action:hover {
-        background: #eaeae8;
-        border-color: var(--line-strong);
-      }
-
-      .action__text {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-
-      .action__text strong {
-        font-weight: 500;
-        letter-spacing: -0.02em;
-      }
-
-      .action svg {
-        margin-left: auto;
-        flex: 0 0 auto;
-        transition: transform 0.22s ease;
-      }
-
-      .action:hover svg {
-        transform: translateX(4px);
-      }
-
-      /* ---------- Footer ---------- */
-      .site-footer {
-        padding: 40px 0;
-        border-top: 1px solid var(--line);
-      }
-
-      .site-footer__inner {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        color: var(--ink-52);
-        font-size: 14px;
-      }
-
-      /* ---------- Dialog ---------- */
-      dialog {
-        width: min(92vw, 660px);
-        padding: 0;
-        border: 1px solid var(--line);
-        border-radius: var(--r-lg);
-        background: var(--surface);
-        color: var(--ink);
-      }
-
-      dialog::backdrop {
-        background: rgba(18, 18, 18, 0.42);
-        -webkit-backdrop-filter: blur(3px);
-        backdrop-filter: blur(3px);
-      }
-
-      .dialog__img {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 720 / 300;
-        padding: 14px;
-        object-fit: contain;
-        border-bottom: 1px solid var(--line);
-        background: var(--panel);
-      }
-
-      .dialog__body {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        padding: 28px;
-      }
-
-      .dialog__body h3 {
-        font-size: 26px;
-        letter-spacing: -0.03em;
-      }
-
-      .dialog__foot {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 4px;
-      }
-
-      /* ---------- Reveal ---------- */
-      .reveal {
-        opacity: 0;
-        transform: translateY(24px);
-        transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-        transition-delay: var(--d, 0ms);
-      }
-
-      .reveal.is-in {
-        opacity: 1;
-        transform: none;
-      }
-
-      .hero h1 .word {
-        opacity: 0;
-        filter: blur(12px);
-        transform: translateY(20px);
-        animation: wordIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        animation-delay: var(--wd, 0ms);
-      }
-
-      @keyframes wordIn {
-        to { opacity: 1; filter: blur(0); transform: none; }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        html { scroll-behavior: auto; }
-        .reveal { opacity: 1; transform: none; transition: none; }
-        .hero h1 .word { opacity: 1; filter: none; transform: none; animation: none; }
-        .marquee__track { animation: none; }
-        .acc__panel { transition: none; }
-        .card__foot svg, .action svg { transition: none; }
-      }
-
-      /* ---------- Responsive ---------- */
-      @media (max-width: 1180px) {
-        :root { --gutter: 44px; }
-        .stats,
-        .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .gallery,
-        .cards-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .split,
-        .upload-grid,
-        .detail,
-        .cta-card { grid-template-columns: minmax(0, 1fr); }
-        .stack-cards { grid-template-rows: none; }
-        .hero__strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      }
-
-      @media (max-width: 940px) {
-        .nav { display: none; }
-        .site-header__inner { max-width: 560px; }
-        .accordion { grid-template-columns: minmax(0, 1fr); }
-      }
-
-      @media (max-width: 680px) {
-        :root { --gutter: 22px; }
-        section { padding: 68px 0; }
-        .hero { padding: 120px 0 68px; }
-        .site-header { top: 12px; }
-        .site-header__inner { height: 58px; padding: 0 8px 0 16px; }
-        .stats,
-        .steps,
-        .gallery,
-        .cards-3 { grid-template-columns: minmax(0, 1fr); }
-        .body-lg { font-size: 18px; }
-        .acc__body { padding-left: 26px; }
-        .marquee figure { width: 216px; }
-        .marquee img { height: 150px; }
-      }
-    </style>
-  </head>
-  <body>
-    <header class="site-header" id="site-header">
-      <div class="site-header__inner">
-        <a class="brand" href="#top">
-          <img src="/assets/logo.png" alt="" width="30" height="30" />
-          Land Records
-        </a>
-        <nav class="nav" aria-label="Primary">
-          <a href="#submit">Submit</a>
-          <a href="#platform">Platform</a>
-          <a href="#archive">Archive</a>
-          <a href="#services">Services</a>
-          <a href="#stages">Stages</a>
-        </nav>
-        <a class="btn btn--sm" href="#submit">Get Started</a>
-      </div>
-    </header>
-
-    <main id="top">
-      <!-- Hero -->
-      <section class="hero">
-        <div class="shell hero__center">
-          <p class="eyebrow reveal">Help people see their land records digitally</p>
-          <h1>
-            <span class="word" style="--wd: 120ms">Scan</span>
-            <span class="word" style="--wd: 190ms">your</span>
-            <span class="word" style="--wd: 260ms">documents</span>
-            <span class="word" style="--wd: 330ms">for</span><br />
-            <span class="word" style="--wd: 400ms">verification.</span>
-          </h1>
-          <div class="hero__cta reveal" style="--d: 500ms">
-            <a class="bracket" href="#submit">
-              <span class="corner tl" aria-hidden="true"></span>
-              <span class="corner tr" aria-hidden="true"></span>
-              <span class="corner bl" aria-hidden="true"></span>
-              <span class="corner br" aria-hidden="true"></span>
-              Get Started
-            </a>
-          </div>
-          <p class="body-lg hero__sub reveal" style="--d: 580ms">
-            Land record digitization brings together secure scanning, precise indexing, and instant access —
-            so ownership records are easy to find, verify, and trust.
-          </p>
-
-          <figure class="hero__figure reveal" style="--d: 660ms">
-            <img
-              src="/assets/hero-archive.png"
-              alt="Open filing cabinet drawer packed with tabbed paper land records in an archive"
-              width="920"
-              height="368"
-            />
-            <div class="hero__strip">
-              <div class="chip-stat"><strong>Ongoing</strong><span>Land offices served</span></div>
-              <div class="chip-stat"><strong>94%</strong><span>OCR model accuracy</span></div>
-              <div class="chip-stat"><strong>5 mins</strong><span>Scan to verified record</span></div>
-              <div class="chip-stat"><strong>Upcoming</strong><span>Audit-ready records</span></div>
-            </div>
-          </figure>
-        </div>
-      </section>
-
-      <!-- Submit -->
-      <section id="submit">
-        <div class="shell">
-          <div class="section-head reveal">
-            <div class="section-head__text">
-              <p class="label">Secure submission</p>
-              <h2 class="h2">Upload your documents</h2>
-            </div>
-            <p class="body" style="max-width: 360px">
-              Send us your land records securely to start the digitization process.
-            </p>
-          </div>
-
-          <div class="upload-grid">
-            <div class="upload-aside reveal">
-              <h3 style="font-size: 21px; letter-spacing: -0.028em">What happens next</h3>
-              <p class="body">
-                Our verification team reviews every file, confirms what is readable, and returns an indexed
-                set with a mapped preview before anything enters the archive.
-              </p>
-              <ul class="facts">
-                <li>Accepted formats <strong>PDF · JPG · PNG · TIFF</strong></li>
-                <li>Maximum file size <strong>25 MB</strong></li>
-                <li>First review <strong>Within 48 hours</strong></li>
-                <li>Handling <strong>Verification only</strong></li>
-              </ul>
-            </div>
-
-            <form class="upload-panel reveal" id="upload-form" style="--d: 80ms">
-              <div class="dropzone" id="dropzone">
-                <div class="dropzone__icon" aria-hidden="true">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17.5 17.5a4 4 0 0 0-.6-7.96 6 6 0 0 0-11.5 1.7A3.5 3.5 0 0 0 6 18.5" />
-                    <path d="M12 20V11" />
-                    <path d="m8.8 14.2 3.2-3.2 3.2 3.2" />
-                  </svg>
-                </div>
-                <h3>Drag files here, or choose them</h3>
-                <p class="hint">PDF, JPG, PNG or TIFF · up to 25 MB per file</p>
-                <label class="btn btn--light btn--sm" for="files">
-                  Choose files
-                  <input id="files" name="files" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff" />
-                </label>
-              </div>
-
-              <ul class="filelist" id="filelist"></ul>
-
-              <div class="upload-actions">
-                <button class="btn" type="submit" id="submit-btn" disabled>Submit Documents</button>
-                <button class="btn btn--light btn--sm" type="button" id="clear-btn" hidden>Clear all</button>
-                <p class="status" id="status" role="status">No files selected yet.</p>
-              </div>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      <!-- Platform -->
-      <section id="platform">
-        <div class="shell">
-          <div class="section-head reveal">
-            <div class="section-head__text">
-              <p class="label">Platform overview</p>
-              <h2 class="h2">Every record scanned, read, checked and mapped</h2>
-            </div>
-            <p class="body" style="max-width: 320px">Open any stage to see what it covers.</p>
-          </div>
-
-          <div class="accordion" id="accordion">
-            <article class="acc reveal is-open">
-              <button class="acc__btn" type="button" aria-expanded="true">
-                <span class="acc__num">01</span>
-                <span class="acc__head">
-                  <h3>AI-powered verification</h3>
-                  <span class="body">Machine checks read every field and flag gaps before a record enters the archive.</span>
-                </span>
-                <span class="acc__sign" aria-hidden="true"></span>
-              </button>
-              <div class="acc__panel">
-                <div class="acc__inner">
-                  <div class="acc__body">
-                    <p class="body">
-                      Each extracted field is scored for confidence. Anything below threshold is queued for a
-                      human reviewer rather than written silently into the archive.
-                    </p>
-                    <ul class="taglist">
-                      <li>Confidence scoring</li>
-                      <li>Gap detection</li>
-                      <li>Review queue</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <article class="acc reveal" style="--d: 60ms">
-              <button class="acc__btn" type="button" aria-expanded="false">
-                <span class="acc__num">02</span>
-                <span class="acc__head">
-                  <h3>OCR extraction</h3>
-                  <span class="body">Our trusted OCR captures text and metadata from every document.</span>
-                </span>
-                <span class="acc__sign" aria-hidden="true"></span>
-              </button>
-              <div class="acc__panel">
-                <div class="acc__inner">
-                  <div class="acc__body">
-                    <p class="body">
-                      Pages are deskewed and cleaned before reading, so faded registers and stamped margins
-                      still yield usable text and structured metadata.
-                    </p>
-                    <ul class="taglist">
-                      <li>Deskew &amp; clean</li>
-                      <li>Field metadata</li>
-                      <li>Regional scripts</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <article class="acc reveal" style="--d: 120ms">
-              <button class="acc__btn" type="button" aria-expanded="false">
-                <span class="acc__num">03</span>
-                <span class="acc__head">
-                  <h3>Human Verification</h3>
-                  <span class="body">We validate each record for completeness, accuracy, and consistency.</span>
-                </span>
-                <span class="acc__sign" aria-hidden="true"></span>
-              </button>
-              <div class="acc__panel">
-                <div class="acc__inner">
-                  <div class="acc__body">
-                    <p class="body">
-                      Reviewers compare the digital entry against the scanned page side by side, and every
-                      correction is attributed and logged.
-                    </p>
-                    <ul class="taglist">
-                      <li>Side-by-side check</li>
-                      <li>Attributed edits</li>
-                      <li>Audit log</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <article class="acc reveal" style="--d: 180ms">
-              <button class="acc__btn" type="button" aria-expanded="false">
-                <span class="acc__num">04</span>
-                <span class="acc__head">
-                  <h3>GIS land mapping</h3>
-                  <span class="body">Visualize verified land records in a precise, searchable 2D map.</span>
-                </span>
-                <span class="acc__sign" aria-hidden="true"></span>
-              </button>
-              <div class="acc__panel">
-                <div class="acc__inner">
-                  <div class="acc__body">
-                    <p class="body">
-                      Verified parcels are tied to survey numbers and plotted, so a holding can be found by
-                      owner, survey number or village boundary.
-                    </p>
-                    <ul class="taglist">
-                      <li>Parcel geometry</li>
-                      <li>Survey linkage</li>
-                      <li>Search by owner</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- Archive -->
-      <section id="archive">
-        <div class="shell">
-          <div class="section-head reveal">
-            <div class="section-head__text">
-              <p class="label">Paper to digital</p>
-              <h2 class="h2">India's record rooms, rebuilt as a digital archive</h2>
-            </div>
-            <p class="body" style="max-width: 340px">Select any card to read how that stage works.</p>
-          </div>
-
-          <div class="split">
-            <figure class="figure-card reveal">
-              <img
-                src="/assets/ill-transition.svg"
-                alt="Illustration of a handwritten land register converting into a verified digital record"
-                width="1200"
-                height="560"
-              />
-              <figcaption>
-                <span>Handwritten register</span>
-                <span aria-hidden="true">→</span>
-                <span>Verified digital record</span>
-              </figcaption>
-            </figure>
-
-            <div class="stack-cards">
-              <button class="card card--interactive reveal" type="button" data-dialog="registers" style="--d: 60ms">
-                <span class="card__eyebrow">Today</span>
-                <h3>Tied bundles and ledgers</h3>
-                <p class="body">Most ownership history still sits in cloth-bound volumes, indexed by hand.</p>
-                <span class="card__foot">
-                  Read more
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </span>
-              </button>
-
-              <button class="card card--interactive reveal" type="button" data-dialog="capture" style="--d: 120ms">
-                <span class="card__eyebrow">In progress</span>
-                <h3>Capture and read</h3>
-                <p class="body">Every page scanned at high resolution, then read field by field.</p>
-                <span class="card__foot">
-                  Read more
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </span>
-              </button>
-
-              <button class="card card--interactive reveal" type="button" data-dialog="archive" style="--d: 180ms">
-                <span class="card__eyebrow">Outcome</span>
-                <h3>Searchable archive</h3>
-                <p class="body">Structured entries, mapped parcels and a trail behind every field.</p>
-                <span class="card__foot">
-                  Read more
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </span>
-              </button>
-            </div>
-          </div>
-
-          <div class="gallery">
-            <button class="tile reveal" type="button" data-dialog="record-room">
-              <img src="/assets/ill-record-room.svg" alt="Illustration of a record room with shelves of tied land record bundles" width="720" height="520" />
-              <span class="tile__body">
-                <strong>Record rooms</strong>
-                <span class="body">Tehsil shelves stacked with tied bundles, indexed only by hand.</span>
-              </span>
-            </button>
-            <button class="tile reveal" type="button" data-dialog="registers" style="--d: 60ms">
-              <img src="/assets/ill-register.svg" alt="Illustration of an open land register showing ruled columns of entries and a seal" width="720" height="520" />
-              <span class="tile__body">
-                <strong>Land registers</strong>
-                <span class="body">Ruled columns of mutation entries, seals and margin notes.</span>
-              </span>
-            </button>
-            <button class="tile reveal" type="button" data-dialog="cadastral" style="--d: 120ms">
-              <img src="/assets/ill-survey-map.svg" alt="Illustration of a cadastral survey map with numbered land parcels" width="720" height="520" />
-              <span class="tile__body">
-                <strong>Cadastral maps</strong>
-                <span class="body">Village survey sheets carrying plot numbers like 127/2 and 132/1.</span>
-              </span>
-            </button>
-            <button class="tile reveal" type="button" data-dialog="capture">
-              <img src="/assets/ill-scanning.svg" alt="Illustration of a paper document passing through a scanner and becoming structured data" width="720" height="520" />
-              <span class="tile__body">
-                <strong>Scanning &amp; OCR</strong>
-                <span class="body">Each page captured at high resolution, then read field by field.</span>
-              </span>
-            </button>
-            <button class="tile reveal" type="button" data-dialog="verified" style="--d: 60ms">
-              <img src="/assets/ill-digital-record.svg" alt="Illustration of a verified digital land record displayed on screen with a check mark" width="720" height="520" />
-              <span class="tile__body">
-                <strong>Verified records</strong>
-                <span class="body">Structured, searchable entries with a check behind every field.</span>
-              </span>
-            </button>
-            <button class="tile reveal" type="button" data-dialog="gis" style="--d: 120ms">
-              <img src="/assets/ill-gis.svg" alt="Illustration of a digital GIS map with land parcels and location pins" width="720" height="520" />
-              <span class="tile__body">
-                <strong>GIS mapping</strong>
-                <span class="body">Parcels plotted to a searchable 2D map you can query by owner.</span>
-              </span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Services -->
-      <section id="services">
-        <div class="shell">
-          <div class="section-head reveal">
-            <div class="section-head__text">
-              <p class="label">What We Provide</p>
-              <h2 class="h2">From paper archive to searchable digital record</h2>
-            </div>
-            <p class="body" style="max-width: 320px">
-              Digitization and verification support continues for every land office we onboard.
-            </p>
-          </div>
-
-          <div class="stats" id="stats">
-            <div class="stat reveal" data-fill="58">
-              <p class="stat__value">Ongoing</p>
-              <p class="stat__label">Land offices served in India</p>
-              <span class="stat__bar"><i></i></span>
-            </div>
-            <div class="stat reveal" style="--d: 60ms" data-count="94" data-suffix="%" data-fill="94">
-              <p class="stat__value">0%</p>
-              <p class="stat__label">Our AI model gives the accuracy of</p>
-              <span class="stat__bar"><i></i></span>
-            </div>
-            <div class="stat reveal" style="--d: 120ms" data-count="5" data-suffix=" mins" data-fill="66">
-              <p class="stat__value">0 mins</p>
-              <p class="stat__label">Average time from scan to verified record</p>
-              <span class="stat__bar"><i></i></span>
-            </div>
-            <div class="stat reveal" style="--d: 180ms" data-fill="34">
-              <p class="stat__value">Upcoming</p>
-              <p class="stat__label">Audit-ready records</p>
-              <span class="stat__bar"><i></i></span>
-            </div>
-          </div>
-
-          <div class="cards-3">
-            <button class="service reveal" type="button" data-dialog="capture">
-              <img src="/assets/ill-scanning.svg" alt="Illustration of a land deed passing through a scanner" width="720" height="460" />
-              <span class="service__body">
-                <span class="card__eyebrow">Service 01</span>
-                <h3>Document Scanning &amp; OCR</h3>
-                <span class="body">Every page captured at high resolution, then read field by field into structured text.</span>
-                <span class="card__foot">
-                  Learn more
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </span>
-              </span>
-            </button>
-
-            <button class="service reveal" type="button" data-dialog="gis" style="--d: 70ms">
-              <img src="/assets/ill-survey-map.svg" alt="Illustration of a village survey map with numbered land parcels" width="720" height="460" />
-              <span class="service__body">
-                <span class="card__eyebrow">Service 02</span>
-                <h3>GIS &amp; Survey Mapping</h3>
-                <span class="body">Verified parcels plotted to a searchable 2D map, queryable by owner, survey or village.</span>
-                <span class="card__foot">
-                  Learn more
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </span>
-              </span>
-            </button>
-
-            <button class="service reveal" type="button" data-dialog="verified" style="--d: 140ms">
-              <img src="/assets/ill-digital-record.svg" alt="Illustration of a verified digital title record with a check mark" width="720" height="460" />
-              <span class="service__body">
-                <span class="card__eyebrow">Service 03</span>
-                <h3>Title Verification &amp; Audit</h3>
-                <span class="body">Cross-checks for completeness and consistency, with a reviewable trail behind every change.</span>
-                <span class="card__foot">
-                  Learn more
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </span>
-              </span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Stages -->
-      <section id="stages">
-        <div class="shell">
-          <div class="section-head reveal">
-            <div class="section-head__text">
-              <p class="label">stages of digitization</p>
-              <h2 class="h2">How a paper deed becomes a verified digital record</h2>
-            </div>
-            <p class="body" style="max-width: 320px">
-              Each stage is logged, so any record can be traced back to the page it came from.
-            </p>
-          </div>
-
-          <div class="steps" id="steps">
-            <button class="step reveal is-active" type="button" data-step="0">
-              <span class="step__num">01</span>
-              <h3>Upload your documents</h3>
-              <span class="body">Send us your land records securely to start the process.</span>
-            </button>
-            <button class="step reveal" type="button" data-step="1" style="--d: 60ms">
-              <span class="step__num">02</span>
-              <h3>OCR extraction</h3>
-              <span class="body">Our trusted OCR captures text and metadata from every document.</span>
-            </button>
-            <button class="step reveal" type="button" data-step="2" style="--d: 120ms">
-              <span class="step__num">03</span>
-              <h3>AI-powered verification</h3>
-              <span class="body">We validate each record for completeness and consistency.</span>
-            </button>
-            <button class="step reveal" type="button" data-step="3" style="--d: 180ms">
-              <span class="step__num">04</span>
-              <h3>GIS land mapping</h3>
-              <span class="body">Visualize verified records in a precise, searchable 2D map.</span>
-            </button>
-          </div>
-
-          <div class="detail reveal" id="step-detail">
-            <img id="detail-img" src="/assets/ill-record-room.svg" alt="Illustration of a record room with shelves of tied land record bundles" width="720" height="520" />
-            <div class="detail__text">
-              <p class="label" id="detail-label">Stage 01</p>
-              <h3 id="detail-title">Upload your documents</h3>
-              <p class="body" id="detail-copy">
-                Records arrive over a secure channel and open a digitization batch. Nothing is processed until
-                the batch is acknowledged.
-              </p>
-              <ul class="taglist" id="detail-tags"></ul>
-            </div>
-          </div>
-
-          <div class="marquee-card reveal">
-            <div class="marquee" aria-label="Land survey and record imagery">
-              <div class="marquee__track" id="marquee-track">
-                <figure>
-                  <img src="/assets/ill-survey-map.svg" alt="Illustration of a cadastral survey sheet with numbered village plots" width="720" height="520" />
-                  <figcaption>Indian Property Survey</figcaption>
-                </figure>
-                <figure>
-                  <img src="/assets/ill-register.svg" alt="Illustration of a stamped land register open at a mutation entry" width="720" height="520" />
-                  <figcaption>Authority of Approval</figcaption>
-                </figure>
-                <figure>
-                  <img src="/assets/ill-office.svg" alt="Illustration of a registry office counter with files and a record terminal" width="720" height="520" />
-                  <figcaption>Valuations within 48 hours</figcaption>
-                </figure>
-                <figure>
-                  <img src="/assets/ill-gis.svg" alt="Illustration of a digital parcel map with location pins" width="720" height="520" />
-                  <figcaption>2D structured map using GIS</figcaption>
-                </figure>
-                <figure>
-                  <img src="/assets/ill-digital-record.svg" alt="Illustration of a verified digital land record with a check mark" width="720" height="520" />
-                  <figcaption>Human Verification</figcaption>
-                </figure>
-                <figure>
-                  <img src="/assets/ill-record-room.svg" alt="Illustration of shelves of tied land record bundles" width="720" height="520" />
-                  <figcaption>Record rooms digitized</figcaption>
-                </figure>
-              </div>
-            </div>
-            <p class="marquee-card__foot">Hover to pause</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- CTA -->
-      <section id="contact">
-        <div class="shell">
-          <div class="cta-card reveal">
-            <div style="display: flex; flex-direction: column; gap: 18px">
-              <p class="label">Get started</p>
-              <h2>Help people see their land records digitally</h2>
-              <p class="body">
-                Share the records you have and our verification team will confirm the next steps for your
-                property.
-              </p>
-            </div>
-            <div class="cta-actions">
-              <a class="action" href="#submit">
-                <span class="action__text">
-                  <strong>Submit documents</strong>
-                  <span class="body">Start a digitization batch</span>
-                </span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </a>
-              <a class="action" href="mailto:records@example.com?subject=Land%20record%20digitization">
-                <span class="action__text">
-                  <strong>Talk to the team</strong>
-                  <span class="body">records@example.com</span>
-                </span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </a>
-              <a class="action" href="#stages">
-                <span class="action__text">
-                  <strong>See the stages</strong>
-                  <span class="body">How a deed becomes a record</span>
-                </span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <div class="shell site-footer__inner">
-        <span>© <span id="year">2026</span> Land Record Digitization Platform</span>
-        <span>Protecting land records through secure, transparent digital verification.</span>
-      </div>
-    </footer>
-
-    <dialog id="dialog">
-      <img class="dialog__img" id="dialog-img" src="" alt="" />
-      <div class="dialog__body">
-        <p class="label" id="dialog-label"></p>
-        <h3 id="dialog-title"></h3>
-        <p class="body" id="dialog-copy"></p>
-        <ul class="taglist" id="dialog-tags"></ul>
-        <div class="dialog__foot">
-          <a class="btn btn--sm" href="#submit" id="dialog-cta">Submit documents</a>
-          <button class="btn btn--light btn--sm" type="button" id="dialog-close">Close</button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#10151e" />
+  <meta name="description" content="A journey beyond the ordinary. Explore imagined worlds, extraordinary horizons, and the space between." />
+  <title>Elsewhere — Go beyond the known</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --night:#10151e; --night-2:#19212d; --orange:#f2a56e; --muted:#a8adb5; --line:rgba(255,255,255,.16); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--night); color:#f8f6f0; font-family:"DM Sans",sans-serif; -webkit-font-smoothing:antialiased; }
+    button, a { -webkit-tap-highlight-color:transparent; }
+    button { font:inherit; cursor:pointer; }
+    a { color:inherit; text-decoration:none; }
+    :focus-visible { outline:2px solid var(--orange); outline-offset:5px; }
+    ::selection { background:var(--orange); color:var(--night); }
+    main { position:relative; overflow:hidden; background:radial-gradient(ellipse 850px 1100px at 92% 30%,rgba(85,96,132,.13),transparent 78%),radial-gradient(ellipse 800px 1100px at 3% 67%,rgba(175,103,92,.1),transparent 78%),var(--night); }
+    .cosmic-dust { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .dust-star { position:absolute; width:2px; height:2px; border-radius:50%; background:rgba(244,224,204,.56); box-shadow:0 0 8px rgba(244,195,155,.32); }
+    .ambient-section { background-image:radial-gradient(570px circle at var(--spot-x,50%) var(--spot-y,50%),rgba(242,165,110,.065),transparent 70%); }
+    .progress { position:fixed; left:0; top:0; width:100%; height:3px; z-index:100; transform:scaleX(0); transform-origin:left; background:var(--orange); pointer-events:none; }
+    .site-header { position:absolute; z-index:30; top:0; left:0; width:100%; display:flex; align-items:center; justify-content:space-between; padding:31px clamp(24px,5.2vw,88px); border-bottom:1px solid rgba(255,255,255,.12); }
+    .brand { display:inline-flex; align-items:center; gap:12px; font-family:Manrope,sans-serif; font-size:23px; font-weight:800; letter-spacing:-.08em; line-height:1; }
+    .brand-mark { display:inline-block; position:relative; width:30px; height:30px; border:2px solid #f7f4ec; border-radius:50%; transform:rotate(-30deg); }
+    .brand-mark:after { content:""; position:absolute; width:40px; height:12px; border:2px solid var(--orange); border-radius:50%; top:6px; left:-7px; transform:rotate(-28deg); }
+    .nav-links { display:flex; align-items:center; gap:38px; margin-left:85px; }
+    .nav-links a { font-size:12px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:#d4d4d4; transition:color .25s; }
+    .nav-links a:hover { color:var(--orange); }
+    .header-action { display:inline-flex; align-items:center; gap:27px; font-size:12px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
+    .header-action .round-arrow, .circle-arrow { display:grid; place-items:center; width:40px; height:40px; border:1px solid rgba(255,255,255,.45); border-radius:50%; font-size:21px; font-weight:400; line-height:1; transition:background .25s,color .25s, border-color .25s; }
+    .header-action:hover .round-arrow { background:var(--orange); border-color:var(--orange); color:var(--night); }
+    .menu-toggle { display:none; border:0; background:transparent; color:#fff; font-size:12px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
+    .hero { min-height:820px; min-height:100svh; position:relative; overflow:hidden; display:flex; align-items:center; background:radial-gradient(ellipse at 77% 45%, #26303e 0%, #161c27 38%, #10151e 70%); }
+    .hero:after { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg,rgba(16,21,30,.38),transparent 47%),linear-gradient(0deg,rgba(16,21,30,.7),transparent 25%); }
+    .stars { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+    .star { position:absolute; width:2px; height:2px; background:white; border-radius:50%; animation:twinkle var(--duration,4s) ease-in-out infinite alternate; animation-delay:var(--delay,0s); opacity:var(--opacity,.5); }
+    @keyframes twinkle { from { opacity:.12; transform:scale(.7); } to { opacity:var(--opacity,.8); transform:scale(1.8); } }
+    .hero-inner { width:100%; max-width:1600px; margin:auto; position:relative; z-index:4; padding:164px clamp(24px,9vw,150px) 150px; }
+    .eyebrow { display:flex; align-items:center; gap:12px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.23em; }
+    .eyebrow .dot { width:6px; height:6px; background:var(--orange); border-radius:50%; box-shadow:0 0 13px var(--orange); }
+    .hero .eyebrow { color:var(--orange); margin-bottom:27px; }
+    .hero h1 { position:relative; max-width:940px; margin:0; font:500 clamp(70px,9.1vw,153px)/.96 Manrope,sans-serif; letter-spacing:-.09em; }
+    .hero h1 em { display:block; font-style:normal; color:var(--orange); }
+    .hero-sub { display:flex; align-items:end; gap:80px; margin-top:39px; }
+    .hero-sub p { max-width:345px; margin:0; font-size:16px; line-height:1.7; color:#bfc1c5; }
+    .text-link { display:inline-flex; align-items:center; gap:22px; padding:0 0 10px; border-bottom:1px solid var(--orange); color:#fff; white-space:nowrap; font-size:12px; text-transform:uppercase; letter-spacing:.17em; font-weight:700; transition:gap .25s,color .25s; }
+    .text-link:hover { gap:32px; color:var(--orange); }
+    .text-link span { font-size:20px; line-height:10px; font-weight:400; }
+    .hero-visual { position:absolute; z-index:2; width:min(66vw,950px); aspect-ratio:1; top:51%; right:-4%; transform:translateY(-50%); perspective:1100px; pointer-events:none; }
+    .hero-visual:before { content:""; position:absolute; inset:12% 8%; border-radius:50%; background:radial-gradient(circle,rgba(242,165,110,.16),transparent 66%); filter:blur(38px); }
+    .planet-float { width:100%; height:100%; animation:float 8s ease-in-out infinite; }
+    @keyframes float { 50% { transform:translateY(-22px); } }
+    .planet-system { position:relative; width:100%; height:100%; transform-style:preserve-3d; transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition:transform .45s ease-out; }
+    .hero-orbit { position:absolute; inset:9%; border:1px solid rgba(220,185,151,.14); border-radius:50%; transform:rotate(-32deg) rotateX(64deg) scaleX(1.36); }
+    .hero-orbit.second { inset:0; opacity:.55; transform:rotate(-32deg) rotateX(64deg) scaleX(1.36); }
+    .hero-planet { position:absolute; z-index:2; width:55%; height:55%; left:25%; top:22%; border-radius:50%; overflow:hidden; clip-path:circle(50%); background:radial-gradient(circle at 22% 27%,rgba(255,239,193,.93),transparent 28%),radial-gradient(circle at 35% 35%,#ecc08c 0%,#bb8067 32%,#8c6263 61%,#343743 85%,#171e2b 100%); box-shadow:inset -38px -25px 75px rgba(14,18,30,.8),inset 20px 7px 35px rgba(255,223,171,.2),0 0 115px rgba(241,160,106,.2),0 28px 110px rgba(0,0,0,.3); animation:planet-breathe 7s ease-in-out infinite alternate; }
+    .hero-planet:after { content:""; position:absolute; inset:-20%; border-radius:50%; background:repeating-linear-gradient(173deg,transparent 0 18px,rgba(97,57,65,.15) 20px 23px,rgba(255,233,187,.1) 25px 31px,transparent 37px 55px); transform:rotate(-18deg); opacity:.45; animation:surface-drift 20s linear infinite alternate; }
+    @keyframes planet-breathe { to { box-shadow:inset -38px -25px 75px rgba(14,18,30,.8),inset 20px 7px 35px rgba(255,223,171,.2),0 0 160px rgba(241,160,106,.3),0 28px 110px rgba(0,0,0,.3); } }
+    @keyframes surface-drift { to { transform:rotate(-18deg) translateX(38px); } }
+    .planet-ring { position:absolute; z-index:3; top:28%; left:5%; width:96%; height:43%; border:clamp(13px,2.1vw,31px) solid rgba(235,183,139,.74); border-left-color:rgba(200,152,138,.33); border-top-color:rgba(244,205,170,.27); border-right-color:rgba(245,197,151,.86); border-radius:50%; transform:rotate(-25deg) rotateX(64deg); box-shadow:0 0 0 10px rgba(179,143,135,.13),0 0 0 24px rgba(223,174,143,.08),0 0 0 45px rgba(201,153,138,.045),inset 0 0 22px rgba(255,239,214,.4); }
+    .planet-ring:after { content:""; position:absolute; inset:-28px; border:2px solid rgba(243,212,179,.36); border-radius:50%; }
+    .planet-moon { position:absolute; z-index:4; width:2.6%; aspect-ratio:1; right:12%; top:14%; border-radius:50%; background:radial-gradient(circle at 30% 30%,#fce8c9,#9a8993 65%,#31394c); box-shadow:0 0 24px rgba(247,211,173,.45); animation:moon-float 6s ease-in-out infinite alternate; }
+    @keyframes moon-float { to { transform:translate(-17px,13px); } }
+    .scene-objects { position:absolute; z-index:5; inset:0; transform:translate3d(var(--px,0px),var(--py,0px),0); transition:transform .65s ease-out; transform-style:preserve-3d; }
+    .satellite-drift { position:absolute; width:150px; height:90px; left:18%; top:21%; animation:satellite-drift 9s ease-in-out infinite alternate; }
+    @keyframes satellite-drift { to { transform:translate3d(18px,-18px,0) rotate(7deg); } }
+    .satellite { position:absolute; inset:0; transform:rotate(-25deg) rotateY(-24deg) rotateX(24deg); transform-style:preserve-3d; filter:drop-shadow(9px 14px 9px rgba(0,0,0,.4)); }
+    .satellite-core { position:absolute; top:27px; left:61px; width:32px; height:34px; border:1px solid #f5d3a1; background:linear-gradient(135deg,#f4d9b4,#856f65 62%,#3d4552); box-shadow:inset 4px 4px 8px rgba(255,255,255,.25),inset -5px -4px 7px rgba(29,29,39,.55); transform:translateZ(15px); }
+    .satellite-core:before { content:""; position:absolute; width:17px; height:20px; left:6px; top:5px; border:1px solid rgba(255,240,211,.75); background:linear-gradient(145deg,#f6ddb2,#aa886c); transform:translateZ(7px); box-shadow:0 0 12px rgba(246,207,150,.35); }
+    .satellite-core:after { content:""; position:absolute; left:13px; bottom:100%; height:19px; border-left:1px solid #d5ad85; box-shadow:1px 0 5px rgba(244,210,167,.4); }
+    .solar-panel { position:absolute; top:29px; width:53px; height:30px; border:2px solid #b9a993; background:repeating-linear-gradient(90deg,transparent 0 10px,rgba(215,197,170,.42) 10px 11px),repeating-linear-gradient(0deg,transparent 0 12px,rgba(215,197,170,.35) 12px 13px),linear-gradient(140deg,#3f5a70,#152534); box-shadow:inset 0 0 10px rgba(255,223,172,.16),3px 5px 8px rgba(0,0,0,.35); }
+    .solar-panel.left { left:0; transform:rotateY(-15deg) translateZ(5px); }
+    .solar-panel.right { right:0; transform:rotateY(15deg) translateZ(5px); }
+    .gyro { position:absolute; left:12%; top:64%; width:112px; aspect-ratio:1; transform-style:preserve-3d; animation:gyro-float 8s ease-in-out infinite alternate; }
+    @keyframes gyro-float { to { transform:translateY(-18px) rotate(-8deg); } }
+    .gyro-ring { position:absolute; inset:9px; border:2px solid rgba(242,197,152,.74); border-radius:50%; box-shadow:0 0 14px rgba(242,165,110,.15),inset 0 0 14px rgba(242,165,110,.1); transform:rotate(-28deg) rotateX(70deg); animation:gyro-spin 13s linear infinite; }
+    .gyro-ring:nth-child(2) { inset:16px; border-color:rgba(215,229,228,.54); transform:rotate(53deg) rotateY(70deg); animation-name:gyro-spin-y; animation-direction:reverse; animation-duration:17s; }
+    @keyframes gyro-spin { to { transform:rotate(332deg) rotateX(70deg); } }
+    @keyframes gyro-spin-y { to { transform:rotate(413deg) rotateY(70deg); } }
+    .gyro-core { position:absolute; width:33px; aspect-ratio:1; top:calc(50% - 16px); left:calc(50% - 16px); border-radius:50%; background:radial-gradient(circle at 28% 24%,#fff2d5,#bd9a81 38%,#485366 75%,#1a2534); box-shadow:inset -5px -5px 10px rgba(15,20,32,.7),0 0 23px rgba(251,205,155,.5); }
+    .field-note { position:absolute; z-index:5; right:5.5%; bottom:13%; width:225px; padding:16px 17px; border:1px solid rgba(245,227,204,.3); background:rgba(33,39,49,.54); box-shadow:0 22px 55px rgba(7,12,20,.35),inset 0 1px rgba(255,255,255,.11); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); transform:perspective(550px) rotateY(-8deg) translate3d(var(--note-x,0px),var(--note-y,0px),0); transition:transform .65s ease-out; pointer-events:none; }
+    .field-note:before { content:""; position:absolute; top:-1px; left:-1px; width:39px; height:2px; background:var(--orange); box-shadow:0 0 16px rgba(242,165,110,.8); }
+    .field-note-top { display:flex; justify-content:space-between; align-items:center; color:#b8bcc1; font-size:9px; letter-spacing:.19em; text-transform:uppercase; }
+    .field-note-top i { width:5px; height:5px; border-radius:50%; background:var(--orange); box-shadow:0 0 10px var(--orange); }
+    .field-note-main { display:flex; align-items:center; gap:13px; padding:19px 0 15px; }
+    .note-sphere { position:relative; flex:none; width:41px; height:41px; border-radius:50%; background:radial-gradient(circle at 26% 23%,#ffe2b2,#b67f68 56%,#3b3542); box-shadow:inset -6px -5px 10px rgba(15,18,28,.7),0 0 18px rgba(242,165,110,.2); }
+    .note-sphere:after { content:""; position:absolute; width:59px; height:13px; left:-10px; top:13px; border:3px solid rgba(246,208,171,.75); border-top-color:rgba(246,208,171,.2); border-radius:50%; transform:rotate(-25deg); }
+    .field-note-main strong { display:block; font:600 19px/1 Manrope,sans-serif; letter-spacing:-.04em; }
+    .field-note-main small { display:block; margin-top:6px; color:#aeb2b8; font-size:9px; letter-spacing:.14em; text-transform:uppercase; }
+    .field-note-bottom { display:flex; justify-content:space-between; padding-top:11px; border-top:1px solid rgba(255,255,255,.16); color:#c7c7c7; font-size:9px; letter-spacing:.1em; text-transform:uppercase; }
+    .hero-coordinate { position:absolute; z-index:5; top:30%; right:6%; font-size:10px; letter-spacing:.23em; color:#d1cac7; writing-mode:vertical-rl; }
+    .hero-bottom { position:absolute; z-index:5; bottom:0; left:0; width:100%; padding:0 clamp(24px,5.2vw,88px) 29px; display:flex; justify-content:space-between; align-items:end; gap:32px; }
+    .hero-bottom:before { content:""; position:absolute; top:-22px; left:clamp(24px,5.2vw,88px); right:clamp(24px,5.2vw,88px); border-top:1px solid rgba(255,255,255,.22); }
+    .hero-index { display:flex; align-items:baseline; gap:16px; }
+    .hero-index strong { font:500 38px/1 Manrope,sans-serif; letter-spacing:-.07em; }
+    .hero-index span, .hero-side { font-size:10px; color:#abb0b8; letter-spacing:.2em; text-transform:uppercase; }
+    .scroll-cue { display:flex; align-items:center; gap:17px; color:#d7d8d7; font-size:10px; letter-spacing:.2em; text-transform:uppercase; }
+    .scroll-cue .line { width:60px; height:1px; background:rgba(255,255,255,.5); overflow:hidden; position:relative; }
+    .scroll-cue .line:after { content:""; position:absolute; inset:0; background:var(--orange); transform:translateX(-100%); animation:scan 2.4s ease-in-out infinite; }
+    @keyframes scan { to { transform:translateX(100%); } }
+    .section-wrap { max-width:1500px; margin:auto; padding-left:clamp(24px,7vw,110px); padding-right:clamp(24px,7vw,110px); }
+    .intro { position:relative; isolation:isolate; color:#f8f6f0; padding-top:150px; padding-bottom:145px; }
+    .intro:before { content:""; position:absolute; z-index:-1; width:630px; height:630px; top:-275px; left:-330px; border:1px solid rgba(245,191,153,.15); border-radius:50%; transform:rotate(-28deg) rotateX(57deg); box-shadow:0 0 0 38px rgba(242,165,110,.018),0 0 0 100px rgba(242,165,110,.012); pointer-events:none; }
+    .intro-top { display:grid; grid-template-columns:1fr 1.4fr; gap:9%; align-items:start; }
+    .intro .eyebrow, .worlds .eyebrow { color:var(--orange); }
+    .intro h2, .worlds h2, .mission h2, .finale h2 { margin:0; font:600 clamp(42px,5.4vw,83px)/1.08 Manrope,sans-serif; letter-spacing:-.075em; }
+    .intro h2 { max-width:690px; margin-top:-12px; }
+    .intro h2 em, .worlds h2 em { font-style:normal; color:var(--orange); }
+    .intro-copy { display:flex; justify-content:flex-end; margin-top:37px; }
+    .intro-copy p { max-width:485px; color:#b7bdc7; font-size:16px; line-height:1.8; margin:0; }
+    .section-rule { border:0; border-top:1px solid rgba(255,255,255,.17); margin:85px 0 0; }
+    .intro-numbers { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; padding-top:32px; }
+    .intro-numbers article { display:flex; flex-direction:column; gap:9px; }
+    .intro-numbers strong { font:500 clamp(34px,4vw,61px)/1 Manrope,sans-serif; letter-spacing:-.08em; }
+    .intro-numbers span { color:#aeb4be; font-size:11px; font-weight:700; letter-spacing:.17em; text-transform:uppercase; }
+    .worlds { position:relative; isolation:isolate; color:#f8f6f0; padding-top:135px; padding-bottom:145px; }
+    .worlds:before { content:""; position:absolute; z-index:-1; width:700px; height:700px; right:-380px; top:-330px; border:1px solid rgba(175,193,220,.13); border-radius:50%; transform:rotate(26deg) rotateX(58deg); box-shadow:0 0 0 62px rgba(175,193,220,.012),0 0 0 125px rgba(175,193,220,.008); pointer-events:none; }
+    .section-heading { display:flex; align-items:end; justify-content:space-between; gap:40px; margin:25px 0 52px; }
+    .section-heading p { max-width:310px; margin:0 0 7px; color:#b0b7c2; line-height:1.7; font-size:14px; }
+    .world-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+    .world-card { position:relative; min-height:510px; overflow:hidden; color:#fff; background:#222a35; border:1px solid rgba(255,255,255,.14); border-radius:12px; isolation:isolate; display:flex; flex-direction:column; justify-content:space-between; padding:26px; transform-style:preserve-3d; transition:box-shadow .35s,transform .35s,border-color .35s; }
+    .world-card:hover { border-color:rgba(242,165,110,.48); box-shadow:0 28px 60px rgba(0,0,0,.3),0 0 38px rgba(242,165,110,.08); }
+    .world-card:nth-child(2) { background:#242b3a; }
+    .world-card:nth-child(3) { background:#282c35; }
+    .world-card:before { content:""; position:absolute; z-index:-2; inset:0; background:radial-gradient(circle at 50% 48%,rgba(191,124,98,.3),transparent 50%); }
+    .world-card:nth-child(2):before { background:radial-gradient(circle at 50% 43%,rgba(159,152,199,.25),transparent 52%); }
+    .world-card:nth-child(3):before { background:radial-gradient(circle at 50% 45%,rgba(198,168,115,.26),transparent 54%); }
+    .world-card:after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(260px circle at var(--card-x,50%) var(--card-y,50%),rgba(255,239,215,.13),transparent 70%); opacity:0; transition:opacity .3s; }
+    .world-card:hover:after { opacity:1; }
+    .card-no { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#d8d8d9; }
+    .card-bottom { display:flex; align-items:end; justify-content:space-between; gap:12px; z-index:3; transform:translateZ(15px); }
+    .card-bottom small { display:block; color:#c6c6c8; font-size:10px; text-transform:uppercase; letter-spacing:.17em; margin-bottom:7px; }
+    .card-bottom h3 { margin:0; font:600 clamp(25px,2.6vw,39px)/1.1 Manrope,sans-serif; letter-spacing:-.06em; }
+    .circle-arrow { width:42px; height:42px; flex:none; }
+    .world-card:hover .circle-arrow { background:#fff; color:#171b23; border-color:#fff; }
+    .card-planet { position:absolute; z-index:-1; width:79%; aspect-ratio:1; border-radius:50%; top:20%; left:11%; transition:transform .7s ease; box-shadow:inset -35px -24px 48px rgba(11,15,25,.78),0 0 48px rgba(255,221,170,.16); }
+    .world-card:hover .card-planet { transform:scale(1.07) rotate(7deg); }
+    .card-planet.mars { background:radial-gradient(circle at 29% 25%,#f4b489,#bd684f 41%,#743d3d 71%,#322d38 98%); }
+    .card-planet.mars:after { content:""; position:absolute; inset:0; border-radius:50%; background:repeating-linear-gradient(-19deg,transparent 0 29px,rgba(82,38,41,.13) 33px 39px,transparent 46px 62px); }
+    .card-planet.neptune { background:radial-gradient(circle at 30% 25%,#b3d8dc,#547b9d 39%,#37455f 67%,#202938 97%); }
+    .card-planet.neptune:after { content:""; position:absolute; inset:0; border-radius:50%; background:repeating-linear-gradient(8deg,transparent 0 22px,rgba(187,228,220,.11) 26px 32px,transparent 38px 55px); }
+    .card-planet.titan { background:radial-gradient(circle at 30% 26%,#f0d7a1,#b58b62 39%,#775b55 70%,#2f3039 98%); }
+    .card-planet.titan:after { content:""; position:absolute; width:137%; height:37%; top:31%; left:-19%; border:12px solid rgba(225,192,143,.65); border-top-color:rgba(225,192,143,.17); border-radius:50%; transform:rotate(-24deg) rotateX(58deg); }
+    .world-footnote { margin-top:27px; display:flex; justify-content:space-between; gap:20px; color:#a0a8b4; text-transform:uppercase; letter-spacing:.16em; font-size:10px; }
+    .mission { position:relative; color:#f8f6f0; padding-top:135px; padding-bottom:150px; }
+    .mission-head { display:grid; grid-template-columns:1fr 1fr; gap:10%; align-items:end; }
+    .mission .eyebrow { color:var(--orange); margin-bottom:28px; }
+    .mission h2 { max-width:680px; }
+    .mission-head p { max-width:350px; margin:0 0 8px auto; color:#abb0b7; line-height:1.75; font-size:15px; }
+    .mission-stage { display:grid; grid-template-columns:1.15fr .85fr; margin-top:70px; min-height:520px; border:1px solid rgba(255,255,255,.16); }
+    .mission-art { position:relative; overflow:hidden; display:grid; place-items:center; min-height:520px; background:radial-gradient(circle at 50% 50%,#293341,#151c27 57%,#111721 80%); border-right:1px solid rgba(255,255,255,.16); }
+    .mission-art:after { content:""; position:absolute; width:76%; aspect-ratio:1; border:1px solid rgba(255,255,255,.15); border-radius:50%; transform:rotateX(68deg) rotate(-25deg) scaleX(1.5); pointer-events:none; }
+    .mission-art .cross { position:absolute; top:24px; left:26px; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:#aeb4bd; }
+    .mission-art .cross.bottom { top:auto; left:auto; right:26px; bottom:24px; }
+    .mission-body { padding:clamp(30px,4vw,65px); display:flex; flex-direction:column; justify-content:space-between; }
+    .mission-tabs { display:flex; gap:8px; flex-wrap:wrap; }
+    .mission-tabs button { padding:10px 16px; background:transparent; border:1px solid rgba(255,255,255,.28); color:#aab0b8; border-radius:30px; text-transform:uppercase; letter-spacing:.13em; font-size:10px; font-weight:700; transition:background .25s,color .25s,border-color .25s; }
+    .mission-tabs button:hover, .mission-tabs button[aria-selected="true"] { background:var(--orange); color:#111721; border-color:var(--orange); }
+    .mission-details { animation:details-in .4s ease both; }
+    @keyframes details-in { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    .mission-details .eyebrow { margin-bottom:18px; }
+    .mission-details h3 { margin:0 0 14px; font:600 clamp(36px,4vw,60px)/1.05 Manrope,sans-serif; letter-spacing:-.07em; }
+    .mission-details p { max-width:375px; color:#b0b5bc; line-height:1.7; font-size:15px; margin:0; }
+    .mission-stats { display:flex; gap:55px; margin-top:35px; padding-top:26px; border-top:1px solid var(--line); }
+    .mission-stats div { display:flex; flex-direction:column; gap:7px; }
+    .mission-stats strong { font:500 24px Manrope,sans-serif; letter-spacing:-.06em; }
+    .mission-stats span { color:#aab0b8; text-transform:uppercase; font-size:10px; letter-spacing:.14em; }
+    .display-planet { position:relative; z-index:2; width:min(57%,340px); aspect-ratio:1; border-radius:50%; background:radial-gradient(circle at 28% 24%,#f6bd92,#be6c52 39%,#754146 70%,#272a38 98%); box-shadow:inset -30px -22px 60px rgba(9,14,24,.8),0 0 100px rgba(218,119,83,.18); animation:slow-turn 18s ease-in-out infinite alternate; transition:background .45s,box-shadow .45s; }
+    .display-planet:after { content:""; position:absolute; inset:0; border-radius:50%; background:repeating-linear-gradient(-16deg,transparent 0 25px,rgba(48,34,50,.13) 30px 34px,transparent 37px 60px); }
+    .display-planet.neptune { background:radial-gradient(circle at 28% 24%,#b3d8dc,#547b9d 39%,#37455f 67%,#202938 97%); box-shadow:inset -30px -22px 60px rgba(9,14,24,.8),0 0 100px rgba(104,158,206,.2); }
+    .display-planet.titan { background:radial-gradient(circle at 30% 26%,#f0d7a1,#b58b62 39%,#775b55 70%,#2f3039 98%); box-shadow:inset -30px -22px 60px rgba(9,14,24,.8),0 0 100px rgba(223,181,116,.18); }
+    @keyframes slow-turn { to { transform:rotate(15deg) translateY(-8px); } }
+    .quote-band { position:relative; isolation:isolate; padding:160px clamp(24px,7vw,110px); color:#f8f6f0; text-align:center; }
+    .quote-band:before { content:""; position:absolute; z-index:-1; width:min(68vw,720px); aspect-ratio:1; left:50%; top:50%; transform:translate(-50%,-50%); border:1px solid rgba(242,165,110,.14); border-radius:50%; background:radial-gradient(circle,rgba(206,133,115,.12),rgba(80,83,121,.07) 46%,transparent 70%); box-shadow:0 0 0 75px rgba(242,165,110,.012),0 0 0 170px rgba(188,156,196,.009); pointer-events:none; }
+    .quote-band p { position:relative; max-width:950px; margin:0 auto; font:500 clamp(33px,4.4vw,67px)/1.17 Manrope,sans-serif; letter-spacing:-.07em; }
+    .quote-accent { color:var(--orange); }
+    .quote-credit { display:block; margin-top:35px; color:#c0c5cd; font-size:10px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; }
+    .finale { position:relative; min-height:650px; overflow:hidden; display:flex; align-items:center; }
+    .finale:before { content:""; position:absolute; width:670px; aspect-ratio:1; right:-180px; bottom:-390px; border:1px solid rgba(255,255,255,.19); border-radius:50%; box-shadow:0 0 0 65px rgba(255,255,255,.025),0 0 0 150px rgba(255,255,255,.025),0 0 0 235px rgba(255,255,255,.018); }
+    .finale .section-wrap { position:relative; z-index:2; width:100%; padding-top:100px; padding-bottom:100px; }
+    .finale .eyebrow { color:var(--orange); margin-bottom:30px; }
+    .finale h2 { max-width:880px; font-size:clamp(56px,8vw,125px); }
+    .finale h2 em { color:var(--orange); font-style:normal; }
+    .finale-actions { display:flex; align-items:center; gap:35px; flex-wrap:wrap; margin-top:50px; }
+    .pill-button { display:inline-flex; align-items:center; gap:55px; border:0; border-radius:100px; background:var(--orange); color:#18202b; padding:19px 23px 19px 29px; font-size:11px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; transition:background .25s,box-shadow .25s; }
+    .pill-button:hover { background:#f7bc91; box-shadow:0 0 32px rgba(242,165,110,.25); }
+    .pill-button span { font-size:24px; font-weight:400; line-height:10px; }
+    .finale-actions p { color:#abb0b7; font-size:13px; line-height:1.6; margin:0; }
+    footer { display:flex; flex-wrap:wrap; gap:30px; align-items:center; justify-content:space-between; padding:35px clamp(24px,5.2vw,88px); background:#10151e; border-top:1px solid var(--line); }
+    footer .brand { font-size:20px; }
+    footer .brand-mark { transform:rotate(-30deg) scale(.75); margin-right:-4px; }
+    footer p, footer a { margin:0; color:#9298a1; font-size:11px; letter-spacing:.08em; }
+    footer a:hover { color:var(--orange); }
+    .footer-links { display:flex; gap:24px; }
+    .reveal { opacity:0; transform:translateY(35px); transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1); }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    .world-card.reveal.visible:hover { transform:perspective(900px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg)); }
+    @media (max-width:1050px) {
+      .nav-links { margin-left:0; gap:22px; }
+      .hero-visual { right:-19%; width:78vw; opacity:.8; }
+      .hero-inner { padding-left:7vw; }
+      .field-note { display:none; }
+      .satellite-drift { scale:.78; transform-origin:center; }
+      .gyro { left:8%; top:68%; scale:.75; }
+      .world-card { min-height:420px; padding:20px; }
+      .card-planet { top:24%; }
+    }
+    @media (max-width:700px) {
+      .site-header { padding:23px 24px; }
+      .brand { font-size:22px; }
+      .header-action { display:none; }
+      .menu-toggle { display:block; }
+      .nav-links { display:none; position:absolute; top:77px; left:0; right:0; margin:0; padding:23px 24px 28px; background:#151b26; border-bottom:1px solid var(--line); flex-direction:column; align-items:stretch; gap:0; }
+      .nav-links.open { display:flex; }
+      .nav-links a { display:block; padding:14px 0; }
+      .hero { min-height:760px; min-height:100svh; align-items:flex-end; }
+      .hero:after { z-index:3; background:linear-gradient(0deg,#10151e 5%,rgba(16,21,30,.08) 90%),linear-gradient(90deg,rgba(16,21,30,.7),transparent 90%); }
+      .hero-visual { width:109vw; top:38%; right:-34%; opacity:.85; }
+      .satellite-drift { left:14%; top:18%; scale:.62; }
+      .gyro, .field-note { display:none; }
+      .hero-inner { padding:270px 24px 158px; }
+      .hero h1 { font-size:clamp(57px,12vw,83px); letter-spacing:-.085em; }
+      .hero .eyebrow { margin-bottom:20px; }
+      .hero-sub { display:block; margin-top:26px; }
+      .hero-sub p { max-width:320px; font-size:14px; }
+      .hero-sub .text-link { margin-top:27px; }
+      .hero-coordinate, .hero-side { display:none; }
+      .hero-bottom { padding:0 24px 23px; }
+      .hero-bottom:before { left:24px; right:24px; }
+      .hero-index strong { font-size:30px; }
+      .scroll-cue .line { width:28px; }
+      .intro,.worlds,.mission { padding-top:86px; padding-bottom:90px; }
+      .intro-top,.mission-head { display:block; }
+      .intro h2 { margin-top:30px; }
+      .intro-copy { justify-content:flex-start; margin-top:29px; }
+      .section-rule { margin-top:60px; }
+      .intro-numbers { gap:12px; }
+      .intro-numbers strong { font-size:35px; }
+      .intro-numbers span { font-size:9px; line-height:1.5; }
+      .section-heading { display:block; margin-bottom:34px; }
+      .section-heading p { margin-top:24px; }
+      .world-grid { grid-template-columns:1fr; gap:14px; }
+      .world-card { min-height:420px; }
+      .card-planet { width:65%; left:17.5%; top:12%; }
+      .world-footnote { line-height:1.5; }
+      .mission-head p { margin:25px 0 0; }
+      .mission-stage { grid-template-columns:1fr; margin-top:38px; }
+      .mission-art { min-height:350px; border-right:0; border-bottom:1px solid var(--line); }
+      .mission-body { gap:50px; min-height:425px; }
+      .mission-stats { gap:35px; }
+      .quote-band { padding-top:80px; padding-bottom:80px; }
+      .finale { min-height:560px; }
+      .finale:before { width:430px; right:-230px; bottom:-270px; }
+      footer { align-items:flex-start; }
+    }
+    @media (max-width:380px) { .hero h1 { font-size:54px; } .hero-visual { top:33%; } .intro-numbers strong { font-size:29px; } .mission-stats { gap:22px; } }
+    @media (prefers-reduced-motion:reduce) {
+      html { scroll-behavior:auto; }
+      *, *:before, *:after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+      .reveal { opacity:1; transform:none; }
+      .world-card.reveal.visible:hover { transform:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+  <header class="site-header">
+    <a href="#top" class="brand" aria-label="Elsewhere home"><span class="brand-mark" aria-hidden="true"></span>elsewhere<span style="color:var(--orange)">.</span></a>
+    <nav class="nav-links" id="nav-links" aria-label="Main navigation">
+      <a href="#about">The idea</a><a href="#worlds">Destinations</a><a href="#mission">The experience</a>
+    </nav>
+    <a class="header-action" href="#explore">Start exploring <span class="round-arrow" aria-hidden="true">↗</span></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+  </header>
+  <main>
+    <div class="cosmic-dust" aria-hidden="true"></div>
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="stars" aria-hidden="true"></div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="planet-float"><div class="planet-system">
+          <div class="hero-orbit second"></div><div class="hero-orbit"></div><div class="hero-planet"></div><div class="planet-ring"></div><div class="planet-moon"></div>
+        </div></div>
+        <div class="scene-objects">
+          <div class="satellite-drift"><div class="satellite"><span class="solar-panel left"></span><span class="satellite-core"></span><span class="solar-panel right"></span></div></div>
+          <div class="gyro"><span class="gyro-ring"></span><span class="gyro-ring"></span><span class="gyro-core"></span></div>
         </div>
       </div>
-    </dialog>
+      <div class="field-note" aria-label="Saturn field note, 1.4 billion kilometers from Earth">
+        <div class="field-note-top"><span>Field note / 001</span><i aria-hidden="true"></i></div>
+        <div class="field-note-main"><span class="note-sphere" aria-hidden="true"></span><div><strong>Saturn</strong><small>The ringed world</small></div></div>
+        <div class="field-note-bottom"><span>Distance from Earth</span><span>1.4B KM</span></div>
+      </div>
+      <span class="hero-coordinate" aria-hidden="true">41° 24′ N &nbsp; / &nbsp; 02° 10′ E &nbsp; / &nbsp; BEYOND</span>
+      <div class="hero-inner">
+        <div class="eyebrow"><span class="dot"></span> An invitation to the unknown</div>
+        <h1 id="hero-title">Go beyond<br>the <em>known.</em></h1>
+        <div class="hero-sub">
+          <p>For the curious, the dreamers, and everyone who ever looked up and wondered what else is out there.</p>
+          <a class="text-link" href="#worlds">Discover the worlds <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+      <div class="hero-bottom"><div class="hero-index"><strong>01</strong><span>/ &nbsp; The beginning of everywhere</span></div><div class="scroll-cue">Scroll to explore <span class="line" aria-hidden="true"></span></div><span class="hero-side">An experience by elsewhere</span></div>
+    </section>
 
-    <script>
-      document.getElementById("year").textContent = String(new Date().getFullYear());
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    <section class="intro section-wrap ambient-section" id="about" aria-labelledby="about-title">
+      <div class="intro-top reveal"><div class="eyebrow"><span class="dot"></span> A different perspective</div><h2 id="about-title">The universe is too beautiful to stay <em>still.</em></h2></div>
+      <div class="intro-copy reveal"><p>Elsewhere is a digital field guide to impossible places. Part imagination, part exploration, and entirely an invitation to see the familiar in a new light. Your journey starts the moment you get curious.</p></div>
+      <hr class="section-rule" />
+      <div class="intro-numbers reveal"><article><strong>∞</strong><span>Possibilities</span></article><article><strong>03</strong><span>Worlds to discover</span></article><article><strong>01</strong><span>Place to begin: here</span></article></div>
+    </section>
 
-      /* ---------- Header scroll state ---------- */
-      const header = document.getElementById("site-header");
-      const navLinks = Array.from(document.querySelectorAll(".nav a"));
-      const sections = navLinks
-        .map((a) => document.querySelector(a.getAttribute("href")))
-        .filter(Boolean);
+    <section class="worlds section-wrap ambient-section" id="worlds" aria-labelledby="worlds-title">
+      <div class="eyebrow reveal"><span class="dot"></span> Pick a direction</div>
+      <div class="section-heading reveal"><h2 id="worlds-title">Where to <em>next?</em></h2><p>Three distant worlds. Three different ways to lose yourself in the extraordinary.</p></div>
+      <div class="world-grid">
+        <a class="world-card reveal" href="#mission" data-world="mars" aria-label="Explore Mars in the experience section"><span class="card-no">01 / The red frontier</span><div class="card-planet mars" aria-hidden="true"></div><div class="card-bottom"><div><small>225 million km away</small><h3>Mars</h3></div><span class="circle-arrow" aria-hidden="true">↗</span></div></a>
+        <a class="world-card reveal" href="#mission" data-world="neptune" aria-label="Explore Neptune in the experience section"><span class="card-no">02 / The blue unknown</span><div class="card-planet neptune" aria-hidden="true"></div><div class="card-bottom"><div><small>4.5 billion km away</small><h3>Neptune</h3></div><span class="circle-arrow" aria-hidden="true">↗</span></div></a>
+        <a class="world-card reveal" href="#mission" data-world="titan" aria-label="Explore Titan in the experience section"><span class="card-no">03 / The golden moon</span><div class="card-planet titan" aria-hidden="true"></div><div class="card-bottom"><div><small>1.4 billion km away</small><h3>Titan</h3></div><span class="circle-arrow" aria-hidden="true">↗</span></div></a>
+      </div>
+      <div class="world-footnote"><span>Imagined journeys / Real wonder</span><span>Choose a world to learn more</span></div>
+    </section>
 
-      const onScroll = () => {
-        header.classList.toggle("is-scrolled", window.scrollY > 12);
-        // Scroll-spy: highlight the section currently under the header.
-        let current = -1;
-        sections.forEach((sec, i) => {
-          if (sec.getBoundingClientRect().top <= 140) current = i;
-        });
-        navLinks.forEach((a, i) => a.classList.toggle("is-active", i === current));
-      };
-      onScroll();
-      window.addEventListener("scroll", onScroll, { passive: true });
+    <section class="mission section-wrap ambient-section" id="mission" aria-labelledby="mission-title">
+      <div class="mission-head reveal"><div><div class="eyebrow"><span class="dot"></span> A closer look</div><h2 id="mission-title">Every world has a story.</h2></div><p>Select a destination and get lost in the details. No spaceship required, just a little imagination.</p></div>
+      <div class="mission-stage reveal">
+        <div class="mission-art" aria-label="Illustrated planet preview"><span class="cross">Fig. 01 / Planetary study</span><div class="display-planet" id="display-planet" aria-hidden="true"></div><span class="cross bottom">Elsewhere atlas / 2026</span></div>
+        <div class="mission-body">
+          <div class="mission-tabs" role="tablist" aria-label="Choose a destination"><button type="button" role="tab" id="tab-mars" aria-controls="planet-panel" aria-selected="true" data-world="mars">Mars</button><button type="button" role="tab" id="tab-neptune" aria-controls="planet-panel" aria-selected="false" tabindex="-1" data-world="neptune">Neptune</button><button type="button" role="tab" id="tab-titan" aria-controls="planet-panel" aria-selected="false" tabindex="-1" data-world="titan">Titan</button></div>
+          <div class="mission-details" id="planet-panel" role="tabpanel" aria-labelledby="tab-mars" tabindex="0">
+            <div class="eyebrow"><span class="dot"></span> Destination 01 / 03</div><h3 id="planet-name">The red frontier.</h3><p id="planet-description">A world of rust-colored horizons, ancient riverbeds, and the quiet promise that somewhere out there, adventure is waiting.</p>
+            <div class="mission-stats"><div><strong id="planet-distance">225M km</strong><span>From home</span></div><div><strong id="planet-day">24h 37m</strong><span>Length of day</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      /* ---------- Scroll reveal ---------- */
-      const items = document.querySelectorAll(".reveal");
-      if (reduced || !("IntersectionObserver" in window)) {
-        items.forEach((el) => el.classList.add("is-in"));
-      } else {
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((e) => {
-              if (e.isIntersecting) {
-                e.target.classList.add("is-in");
-                io.unobserve(e.target);
-              }
-            });
-          },
-          { rootMargin: "0px 0px -10% 0px", threshold: 0.06 }
-        );
-        items.forEach((el) => io.observe(el));
-      }
+    <aside class="quote-band ambient-section"><p class="reveal">“Somewhere, something incredible is waiting to be <span class="quote-accent">known.</span>”</p><span class="quote-credit reveal">Carl Sagan</span></aside>
 
-      /* ---------- Stat count-up + bars ---------- */
-      const stats = Array.from(document.querySelectorAll(".stat"));
-      const runStat = (el) => {
-        const bar = el.querySelector(".stat__bar i");
-        if (bar) bar.style.width = el.dataset.fill + "%";
-        // Cards without data-count carry a text value (e.g. "Ongoing") — leave it alone.
-        if (!el.dataset.count) return;
-        const target = Number(el.dataset.count);
-        const suffix = el.dataset.suffix || "";
-        const valueEl = el.querySelector(".stat__value");
-        if (reduced) {
-          valueEl.textContent = target + suffix;
-          return;
-        }
-        const dur = 1100;
-        const t0 = performance.now();
-        const tick = (now) => {
-          const p = Math.min(1, (now - t0) / dur);
-          const eased = 1 - Math.pow(1 - p, 3);
-          valueEl.textContent = Math.round(target * eased) + suffix;
-          if (p < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-      };
+    <section class="finale ambient-section" id="explore" aria-labelledby="finale-title"><div class="section-wrap reveal"><div class="eyebrow"><span class="dot"></span> The journey is yours</div><h2 id="finale-title">Stay curious.<br><em>Go further.</em></h2><div class="finale-actions"><a class="pill-button" href="#worlds">Explore the worlds <span aria-hidden="true">↗</span></a><p>No tickets. No limits.<br>Just the wonder of what could be.</p></div></div></section>
+  </main>
+  <footer><a href="#top" class="brand" aria-label="Elsewhere back to top"><span class="brand-mark" aria-hidden="true"></span>elsewhere<span style="color:var(--orange)">.</span></a><p>Made for the endlessly curious.</p><div class="footer-links"><a href="#about">About</a><a href="#worlds">Destinations</a><a href="#top">Back to top ↑</a></div><p>© 2026 Elsewhere</p></footer>
+  <script>
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const stars = document.querySelector('.stars');
+    // Seeded positions keep the starfield stable between page loads.
+    let seed = 17;
+    const random = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let i = 0; i < 95; i++) {
+      const star = document.createElement('span');
+      star.className = 'star';
+      star.style.left = `${random() * 100}%`;
+      star.style.top = `${random() * 100}%`;
+      star.style.setProperty('--opacity', (random() * .65 + .25).toFixed(2));
+      star.style.setProperty('--duration', `${(random() * 4 + 2).toFixed(1)}s`);
+      star.style.setProperty('--delay', `${(random() * -6).toFixed(1)}s`);
+      stars.appendChild(star);
+    }
+    const dust = document.querySelector('.cosmic-dust');
+    for (let i = 0; i < 75; i++) {
+      const star = document.createElement('span');
+      star.className = 'dust-star';
+      star.style.left = `${(random() * 100).toFixed(2)}%`;
+      star.style.top = `${(17 + random() * 82).toFixed(2)}%`;
+      star.style.opacity = (random() * .55 + .2).toFixed(2);
+      dust.appendChild(star);
+    }
 
-      if ("IntersectionObserver" in window) {
-        const sio = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((e) => {
-              if (e.isIntersecting) {
-                runStat(e.target);
-                sio.unobserve(e.target);
-              }
-            });
-          },
-          { threshold: 0.4 }
-        );
-        stats.forEach((s) => sio.observe(s));
-      } else {
-        stats.forEach(runStat);
-      }
-
-      /* ---------- Accordion ---------- */
-      document.querySelectorAll(".acc__btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const item = btn.closest(".acc");
-          const open = item.classList.toggle("is-open");
-          btn.setAttribute("aria-expanded", String(open));
-        });
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
       });
+    }, { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-      /* ---------- Stage switcher ---------- */
-      const stageData = [
-        {
-          label: "Stage 01",
-          title: "Upload your documents",
-          copy:
-            "Records arrive over a secure channel and open a digitization batch. Nothing is processed until the batch is acknowledged.",
-          tags: ["Secure transfer", "Batch receipt", "Chain of custody"],
-          img: "/assets/ill-record-room.svg",
-          alt: "Illustration of a record room with shelves of tied land record bundles",
-        },
-        {
-          label: "Stage 02",
-          title: "OCR extraction",
-          copy:
-            "Pages are deskewed and cleaned, then read field by field so faded registers and stamped margins still yield usable text.",
-          tags: ["Deskew & clean", "Field metadata", "Regional scripts"],
-          img: "/assets/ill-scanning.svg",
-          alt: "Illustration of a paper document passing through a scanner and becoming structured data",
-        },
-        {
-          label: "Stage 03",
-          title: "AI-powered verification",
-          copy:
-            "Every field is scored for confidence. Low-confidence entries go to a human reviewer instead of being written silently into the archive.",
-          tags: ["Confidence scoring", "Review queue", "Audit log"],
-          img: "/assets/ill-digital-record.svg",
-          alt: "Illustration of a verified digital land record with a check mark",
-        },
-        {
-          label: "Stage 04",
-          title: "GIS land mapping",
-          copy:
-            "Verified parcels are tied to survey numbers and plotted, so a holding can be found by owner, survey number or village boundary.",
-          tags: ["Parcel geometry", "Survey linkage", "Search by owner"],
-          img: "/assets/ill-gis.svg",
-          alt: "Illustration of a digital GIS map with land parcels and location pins",
-        },
-      ];
-
-      const detailImg = document.getElementById("detail-img");
-      const detailLabel = document.getElementById("detail-label");
-      const detailTitle = document.getElementById("detail-title");
-      const detailCopy = document.getElementById("detail-copy");
-      const detailTags = document.getElementById("detail-tags");
-
-      const setTags = (el, tags) => {
-        el.innerHTML = "";
-        tags.forEach((t) => {
-          const li = document.createElement("li");
-          li.textContent = t;
-          el.appendChild(li);
-        });
-      };
-
-      const showStage = (i) => {
-        const d = stageData[i];
-        detailImg.src = d.img;
-        detailImg.alt = d.alt;
-        detailLabel.textContent = d.label;
-        detailTitle.textContent = d.title;
-        detailCopy.textContent = d.copy;
-        setTags(detailTags, d.tags);
-        document.querySelectorAll(".step").forEach((s, si) => {
-          s.classList.toggle("is-active", si === i);
-          s.setAttribute("aria-pressed", String(si === i));
-        });
-      };
-
-      document.querySelectorAll(".step").forEach((step) => {
-        step.addEventListener("click", () => showStage(Number(step.dataset.step)));
+    const progress = document.querySelector('.progress');
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const range = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.transform = `scaleX(${range > 0 ? window.scrollY / range : 0})`;
+        ticking = false;
       });
-      showStage(0);
+    }, { passive:true });
 
-      /* ---------- Dialogs ---------- */
-      const dialogData = {
-        "record-room": {
-          label: "Paper today",
-          title: "Record rooms",
-          copy:
-            "Tehsil and registry record rooms hold tied bundles stacked by volume and year. Retrieval depends on staff memory and hand-written indexes, so a single query can take days.",
-          tags: ["Manual indexes", "Physical wear", "Slow retrieval"],
-          img: "/assets/ill-record-room.svg",
-          alt: "Illustration of a record room with shelves of tied land record bundles",
-        },
-        registers: {
-          label: "Paper today",
-          title: "Land registers",
-          copy:
-            "Mutation entries run in ruled columns across bound volumes, carrying seals, corrections and margin notes. The ordering carries meaning, so we preserve it rather than flattening it.",
-          tags: ["Mutation entries", "Seals & notes", "Order preserved"],
-          img: "/assets/ill-register.svg",
-          alt: "Illustration of an open land register showing ruled columns of entries and a seal",
-        },
-        cadastral: {
-          label: "Paper today",
-          title: "Cadastral maps",
-          copy:
-            "Village survey sheets carry plot numbers such as 127/2 and 132/1, subdivided over decades. These sheets are the bridge between a written record and a location on the ground.",
-          tags: ["Survey sheets", "Subdivisions", "Ground truth"],
-          img: "/assets/ill-survey-map.svg",
-          alt: "Illustration of a cadastral survey map with numbered land parcels",
-        },
-        capture: {
-          label: "Service 01",
-          title: "Document Scanning & OCR",
-          copy:
-            "Pages are captured at high resolution, deskewed and cleaned, then read field by field into structured text and metadata. Originals are never altered.",
-          tags: ["High-resolution capture", "Deskew & clean", "Field metadata"],
-          img: "/assets/ill-scanning.svg",
-          alt: "Illustration of a paper document passing through a scanner and becoming structured data",
-        },
-        verified: {
-          label: "Service 03",
-          title: "Title Verification & Audit",
-          copy:
-            "Each record is cross-checked for completeness and internal consistency. Reviewers work against the scanned page, and every correction is attributed and logged.",
-          tags: ["Cross-checks", "Attributed edits", "Reviewable trail"],
-          img: "/assets/ill-digital-record.svg",
-          alt: "Illustration of a verified digital land record displayed on screen with a check mark",
-        },
-        gis: {
-          label: "Service 02",
-          title: "GIS & Survey Mapping",
-          copy:
-            "Verified parcels are tied to their survey numbers and plotted onto a structured 2D map, searchable by owner, survey number or village boundary.",
-          tags: ["Parcel geometry", "Survey linkage", "Searchable map"],
-          img: "/assets/ill-gis.svg",
-          alt: "Illustration of a digital GIS map with land parcels and location pins",
-        },
-        archive: {
-          label: "Outcome",
-          title: "A searchable digital archive",
-          copy:
-            "The finished archive holds structured entries, mapped parcels and an audit trail behind every field — so a record can be found in seconds and traced back to the page it came from.",
-          tags: ["Structured entries", "Mapped parcels", "Full audit trail"],
-          img: "/assets/ill-digital-record.svg",
-          alt: "Illustration of a verified digital land record displayed on screen with a check mark",
-        },
-      };
-
-      const dialog = document.getElementById("dialog");
-      const dImg = document.getElementById("dialog-img");
-      const dLabel = document.getElementById("dialog-label");
-      const dTitle = document.getElementById("dialog-title");
-      const dCopy = document.getElementById("dialog-copy");
-      const dTags = document.getElementById("dialog-tags");
-
-      document.querySelectorAll("[data-dialog]").forEach((el) => {
-        el.addEventListener("click", () => {
-          const d = dialogData[el.dataset.dialog];
-          if (!d) return;
-          dImg.src = d.img;
-          dImg.alt = d.alt;
-          dLabel.textContent = d.label;
-          dTitle.textContent = d.title;
-          dCopy.textContent = d.copy;
-          setTags(dTags, d.tags);
-          if (typeof dialog.showModal === "function") dialog.showModal();
-          else dialog.setAttribute("open", "");
+    const hero = document.querySelector('.hero');
+    const system = document.querySelector('.planet-system');
+    const sceneObjects = document.querySelector('.scene-objects');
+    const fieldNote = document.querySelector('.field-note');
+    if (!reducedMotion.matches && window.matchMedia('(pointer:fine)').matches) {
+      hero.addEventListener('pointermove', event => {
+        const x = event.clientX / hero.clientWidth - .5;
+        const y = event.clientY / hero.clientHeight - .5;
+        system.style.setProperty('--ry', `${(x * 12).toFixed(2)}deg`);
+        system.style.setProperty('--rx', `${(-y * 10).toFixed(2)}deg`);
+        sceneObjects.style.setProperty('--px', `${(x * -35).toFixed(2)}px`);
+        sceneObjects.style.setProperty('--py', `${(y * -28).toFixed(2)}px`);
+        fieldNote.style.setProperty('--note-x', `${(x * 13).toFixed(2)}px`);
+        fieldNote.style.setProperty('--note-y', `${(y * 13).toFixed(2)}px`);
+      });
+      hero.addEventListener('pointerleave', () => {
+        system.style.setProperty('--ry','0deg'); system.style.setProperty('--rx','0deg');
+        sceneObjects.style.setProperty('--px','0px'); sceneObjects.style.setProperty('--py','0px');
+        fieldNote.style.setProperty('--note-x','0px'); fieldNote.style.setProperty('--note-y','0px');
+      });
+      document.querySelectorAll('.ambient-section').forEach(section => {
+        section.addEventListener('pointermove', event => {
+          const rect = section.getBoundingClientRect();
+          section.style.setProperty('--spot-x', `${event.clientX - rect.left}px`);
+          section.style.setProperty('--spot-y', `${event.clientY - rect.top}px`);
         });
       });
-
-      document.getElementById("dialog-close").addEventListener("click", () => dialog.close());
-      document.getElementById("dialog-cta").addEventListener("click", () => dialog.close());
-      dialog.addEventListener("click", (e) => {
-        if (e.target === dialog) dialog.close();
-      });
-
-      /* ---------- Marquee loop ---------- */
-      const track = document.getElementById("marquee-track");
-      if (track && !reduced) {
-        const originals = track.children.length;
-        track.innerHTML += track.innerHTML;
-        Array.from(track.children)
-          .slice(originals)
-          .forEach((fig) => {
-            const img = fig.querySelector("img");
-            if (img) img.alt = "";
-            fig.setAttribute("aria-hidden", "true");
-          });
-      }
-
-      /* ---------- Upload: drag, drop, chips ---------- */
-      const form = document.getElementById("upload-form");
-      const input = document.getElementById("files");
-      const dropzone = document.getElementById("dropzone");
-      const listEl = document.getElementById("filelist");
-      const statusEl = document.getElementById("status");
-      const submitBtn = document.getElementById("submit-btn");
-      const clearBtn = document.getElementById("clear-btn");
-      const MAX = 25 * 1024 * 1024;
-      let files = [];
-
-      const fmt = (bytes) => {
-        if (bytes < 1024) return bytes + " B";
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + " KB";
-        return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-      };
-
-      const render = () => {
-        listEl.innerHTML = "";
-        files.forEach((file, i) => {
-          const li = document.createElement("li");
-          li.className = "filechip";
-          const name = document.createElement("span");
-          name.textContent = file.name + " · " + fmt(file.size);
-          const rm = document.createElement("button");
-          rm.type = "button";
-          rm.setAttribute("aria-label", "Remove " + file.name);
-          rm.innerHTML =
-            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-          rm.addEventListener("click", () => {
-            files.splice(i, 1);
-            render();
-          });
-          li.append(name, rm);
-          listEl.appendChild(li);
+      document.querySelectorAll('.world-card').forEach(card => {
+        card.addEventListener('pointermove', event => {
+          const rect = card.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width - .5;
+          const y = (event.clientY - rect.top) / rect.height - .5;
+          card.style.setProperty('--tilt-x', `${(-y * 7).toFixed(2)}deg`);
+          card.style.setProperty('--tilt-y', `${(x * 7).toFixed(2)}deg`);
+          card.style.setProperty('--card-x', `${event.clientX - rect.left}px`);
+          card.style.setProperty('--card-y', `${event.clientY - rect.top}px`);
         });
-
-        submitBtn.disabled = files.length === 0;
-        clearBtn.hidden = files.length === 0;
-        statusEl.textContent =
-          files.length === 0
-            ? "No files selected yet."
-            : files.length + (files.length === 1 ? " file ready to submit." : " files ready to submit.");
-      };
-
-      const addFiles = (incoming) => {
-        const rejected = [];
-        Array.from(incoming).forEach((file) => {
-          if (file.size > MAX) {
-            rejected.push(file.name);
-            return;
-          }
-          if (!files.some((f) => f.name === file.name && f.size === file.size)) files.push(file);
+        card.addEventListener('pointerleave', () => {
+          card.style.setProperty('--tilt-x', '0deg');
+          card.style.setProperty('--tilt-y', '0deg');
         });
-        render();
-        if (rejected.length) {
-          statusEl.textContent = rejected.join(", ") + " exceeds the 25 MB limit and was not added.";
-        }
-      };
-
-      input.addEventListener("change", () => {
-        addFiles(input.files);
-        input.value = "";
       });
+    }
 
-      clearBtn.addEventListener("click", () => {
-        files = [];
-        render();
+    const worlds = {
+      mars: { name:'The red frontier.', description:'A world of rust-colored horizons, ancient riverbeds, and the quiet promise that somewhere out there, adventure is waiting.', distance:'225M km', day:'24h 37m', number:'01' },
+      neptune: { name:'The blue unknown.', description:'Where deep cobalt storms swirl through an endless atmosphere. A place so far away, it asks us to imagine a whole new kind of horizon.', distance:'4.5B km', day:'16h 6m', number:'02' },
+      titan: { name:'The golden moon.', description:'Beneath a hazy amber sky, rivers and lakes carve through another world. Familiar shapes in an utterly unfamiliar place.', distance:'1.4B km', day:'15d 22h', number:'03' }
+    };
+    const tabs = [...document.querySelectorAll('.mission-tabs [role="tab"]')];
+    const panel = document.querySelector('#planet-panel');
+    const selectWorld = key => {
+      const data = worlds[key];
+      tabs.forEach(tab => { const active = tab.dataset.world === key; tab.setAttribute('aria-selected', String(active)); tab.tabIndex = active ? 0 : -1; });
+      panel.setAttribute('aria-labelledby', `tab-${key}`);
+      document.querySelector('#display-planet').className = `display-planet ${key}`;
+      document.querySelector('#planet-name').textContent = data.name;
+      document.querySelector('#planet-description').textContent = data.description;
+      document.querySelector('#planet-distance').textContent = data.distance;
+      document.querySelector('#planet-day').textContent = data.day;
+      panel.querySelector('.eyebrow').innerHTML = `<span class="dot"></span> Destination ${data.number} / 03`;
+      panel.style.animation = 'none';
+      void panel.offsetWidth;
+      panel.style.animation = '';
+    };
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => selectWorld(tab.dataset.world));
+      tab.addEventListener('keydown', event => {
+        if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+        event.preventDefault();
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+        selectWorld(tabs[next].dataset.world);
+        tabs[next].focus();
       });
+    });
+    document.querySelectorAll('.world-card').forEach(card => card.addEventListener('click', () => selectWorld(card.dataset.world)));
 
-      ["dragenter", "dragover"].forEach((ev) =>
-        dropzone.addEventListener(ev, (e) => {
-          e.preventDefault();
-          dropzone.classList.add("is-drag");
-        })
-      );
-      ["dragleave", "drop"].forEach((ev) =>
-        dropzone.addEventListener(ev, (e) => {
-          e.preventDefault();
-          if (ev === "dragleave" && dropzone.contains(e.relatedTarget)) return;
-          dropzone.classList.remove("is-drag");
-        })
-      );
-      dropzone.addEventListener("drop", (e) => {
-        if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
-      });
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        if (!files.length) return;
-
-        submitBtn.disabled = true;
-        clearBtn.hidden = true;
-        submitBtn.textContent = "Submitting…";
-        statusEl.textContent = "Uploading " + files.length + (files.length === 1 ? " file…" : " files…");
-
-        try {
-          const res = await fetch("/api/submissions", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-              files: files.map((f) => ({ name: f.name, size: f.size })),
-            }),
-          });
-          if (!res.ok) throw new Error("Request failed: " + res.status);
-          const data = await res.json();
-          statusEl.textContent = "Batch " + data.reference + " created. Opening verification status…";
-          window.location.href = "/verification?batch=" + encodeURIComponent(data.id);
-        } catch (err) {
-          submitBtn.disabled = false;
-          clearBtn.hidden = false;
-          submitBtn.textContent = "Submit Documents";
-          statusEl.textContent = "Could not reach the server. Please try again.";
-        }
-      });
-
-      render();
-    </script>
-  </body>
+    const menu = document.querySelector('.menu-toggle');
+    const nav = document.querySelector('.nav-links');
+    menu.addEventListener('click', () => {
+      const open = menu.getAttribute('aria-expanded') !== 'true';
+      menu.setAttribute('aria-expanded', String(open));
+      menu.textContent = open ? 'Close' : 'Menu';
+      nav.classList.toggle('open', open);
+    });
+    nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      menu.setAttribute('aria-expanded', 'false'); menu.textContent = 'Menu'; nav.classList.remove('open');
+    }));
+  </script>
+</body>
 </html>
