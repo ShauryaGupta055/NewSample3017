@@ -48,6 +48,7 @@
     .text-link:hover { gap:32px; color:var(--orange); }
     .text-link span { font-size:20px; line-height:10px; font-weight:400; }
     .hero-visual { position:absolute; z-index:2; width:min(66vw,950px); aspect-ratio:1; top:51%; right:-4%; transform:translateY(-50%); perspective:1100px; pointer-events:none; }
+    .hero-visual:before { content:""; position:absolute; inset:12% 8%; border-radius:50%; background:radial-gradient(circle,rgba(242,165,110,.16),transparent 66%); filter:blur(38px); }
     .planet-float { width:100%; height:100%; animation:float 8s ease-in-out infinite; }
     @keyframes float { 50% { transform:translateY(-22px); } }
     .planet-system { position:relative; width:100%; height:100%; transform-style:preserve-3d; transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition:transform .45s ease-out; }
@@ -61,6 +62,33 @@
     .planet-ring:after { content:""; position:absolute; inset:-28px; border:2px solid rgba(243,212,179,.36); border-radius:50%; }
     .planet-moon { position:absolute; z-index:4; width:2.6%; aspect-ratio:1; right:12%; top:14%; border-radius:50%; background:radial-gradient(circle at 30% 30%,#fce8c9,#9a8993 65%,#31394c); box-shadow:0 0 24px rgba(247,211,173,.45); animation:moon-float 6s ease-in-out infinite alternate; }
     @keyframes moon-float { to { transform:translate(-17px,13px); } }
+    .scene-objects { position:absolute; z-index:5; inset:0; transform:translate3d(var(--px,0px),var(--py,0px),0); transition:transform .65s ease-out; transform-style:preserve-3d; }
+    .satellite-drift { position:absolute; width:150px; height:90px; left:18%; top:21%; animation:satellite-drift 9s ease-in-out infinite alternate; }
+    @keyframes satellite-drift { to { transform:translate3d(18px,-18px,0) rotate(7deg); } }
+    .satellite { position:absolute; inset:0; transform:rotate(-25deg) rotateY(-24deg) rotateX(24deg); transform-style:preserve-3d; filter:drop-shadow(9px 14px 9px rgba(0,0,0,.4)); }
+    .satellite-core { position:absolute; top:27px; left:61px; width:32px; height:34px; border:1px solid #f5d3a1; background:linear-gradient(135deg,#f4d9b4,#856f65 62%,#3d4552); box-shadow:inset 4px 4px 8px rgba(255,255,255,.25),inset -5px -4px 7px rgba(29,29,39,.55); transform:translateZ(15px); }
+    .satellite-core:before { content:""; position:absolute; width:17px; height:20px; left:6px; top:5px; border:1px solid rgba(255,240,211,.75); background:linear-gradient(145deg,#f6ddb2,#aa886c); transform:translateZ(7px); box-shadow:0 0 12px rgba(246,207,150,.35); }
+    .satellite-core:after { content:""; position:absolute; left:13px; bottom:100%; height:19px; border-left:1px solid #d5ad85; box-shadow:1px 0 5px rgba(244,210,167,.4); }
+    .solar-panel { position:absolute; top:29px; width:53px; height:30px; border:2px solid #b9a993; background:repeating-linear-gradient(90deg,transparent 0 10px,rgba(215,197,170,.42) 10px 11px),repeating-linear-gradient(0deg,transparent 0 12px,rgba(215,197,170,.35) 12px 13px),linear-gradient(140deg,#3f5a70,#152534); box-shadow:inset 0 0 10px rgba(255,223,172,.16),3px 5px 8px rgba(0,0,0,.35); }
+    .solar-panel.left { left:0; transform:rotateY(-15deg) translateZ(5px); }
+    .solar-panel.right { right:0; transform:rotateY(15deg) translateZ(5px); }
+    .gyro { position:absolute; left:12%; top:64%; width:112px; aspect-ratio:1; transform-style:preserve-3d; animation:gyro-float 8s ease-in-out infinite alternate; }
+    @keyframes gyro-float { to { transform:translateY(-18px) rotate(-8deg); } }
+    .gyro-ring { position:absolute; inset:9px; border:2px solid rgba(242,197,152,.74); border-radius:50%; box-shadow:0 0 14px rgba(242,165,110,.15),inset 0 0 14px rgba(242,165,110,.1); transform:rotate(-28deg) rotateX(70deg); animation:gyro-spin 13s linear infinite; }
+    .gyro-ring:nth-child(2) { inset:16px; border-color:rgba(215,229,228,.54); transform:rotate(53deg) rotateY(70deg); animation-name:gyro-spin-y; animation-direction:reverse; animation-duration:17s; }
+    @keyframes gyro-spin { to { transform:rotate(332deg) rotateX(70deg); } }
+    @keyframes gyro-spin-y { to { transform:rotate(413deg) rotateY(70deg); } }
+    .gyro-core { position:absolute; width:33px; aspect-ratio:1; top:calc(50% - 16px); left:calc(50% - 16px); border-radius:50%; background:radial-gradient(circle at 28% 24%,#fff2d5,#bd9a81 38%,#485366 75%,#1a2534); box-shadow:inset -5px -5px 10px rgba(15,20,32,.7),0 0 23px rgba(251,205,155,.5); }
+    .field-note { position:absolute; z-index:5; right:5.5%; bottom:13%; width:225px; padding:16px 17px; border:1px solid rgba(245,227,204,.3); background:rgba(33,39,49,.54); box-shadow:0 22px 55px rgba(7,12,20,.35),inset 0 1px rgba(255,255,255,.11); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); transform:perspective(550px) rotateY(-8deg) translate3d(var(--note-x,0px),var(--note-y,0px),0); transition:transform .65s ease-out; pointer-events:none; }
+    .field-note:before { content:""; position:absolute; top:-1px; left:-1px; width:39px; height:2px; background:var(--orange); box-shadow:0 0 16px rgba(242,165,110,.8); }
+    .field-note-top { display:flex; justify-content:space-between; align-items:center; color:#b8bcc1; font-size:9px; letter-spacing:.19em; text-transform:uppercase; }
+    .field-note-top i { width:5px; height:5px; border-radius:50%; background:var(--orange); box-shadow:0 0 10px var(--orange); }
+    .field-note-main { display:flex; align-items:center; gap:13px; padding:19px 0 15px; }
+    .note-sphere { position:relative; flex:none; width:41px; height:41px; border-radius:50%; background:radial-gradient(circle at 26% 23%,#ffe2b2,#b67f68 56%,#3b3542); box-shadow:inset -6px -5px 10px rgba(15,18,28,.7),0 0 18px rgba(242,165,110,.2); }
+    .note-sphere:after { content:""; position:absolute; width:59px; height:13px; left:-10px; top:13px; border:3px solid rgba(246,208,171,.75); border-top-color:rgba(246,208,171,.2); border-radius:50%; transform:rotate(-25deg); }
+    .field-note-main strong { display:block; font:600 19px/1 Manrope,sans-serif; letter-spacing:-.04em; }
+    .field-note-main small { display:block; margin-top:6px; color:#aeb2b8; font-size:9px; letter-spacing:.14em; text-transform:uppercase; }
+    .field-note-bottom { display:flex; justify-content:space-between; padding-top:11px; border-top:1px solid rgba(255,255,255,.16); color:#c7c7c7; font-size:9px; letter-spacing:.1em; text-transform:uppercase; }
     .hero-coordinate { position:absolute; z-index:5; top:30%; right:6%; font-size:10px; letter-spacing:.23em; color:#d1cac7; writing-mode:vertical-rl; }
     .hero-bottom { position:absolute; z-index:5; bottom:0; left:0; width:100%; padding:0 clamp(24px,5.2vw,88px) 29px; display:flex; justify-content:space-between; align-items:end; gap:32px; }
     .hero-bottom:before { content:""; position:absolute; top:-22px; left:clamp(24px,5.2vw,88px); right:clamp(24px,5.2vw,88px); border-top:1px solid rgba(255,255,255,.22); }
@@ -165,6 +193,9 @@
       .nav-links { margin-left:0; gap:22px; }
       .hero-visual { right:-19%; width:78vw; opacity:.8; }
       .hero-inner { padding-left:7vw; }
+      .field-note { display:none; }
+      .satellite-drift { scale:.78; transform-origin:center; }
+      .gyro { left:8%; top:68%; scale:.75; }
       .world-card { min-height:420px; padding:20px; }
       .card-planet { top:24%; }
     }
@@ -179,6 +210,8 @@
       .hero { min-height:760px; min-height:100svh; align-items:flex-end; }
       .hero:after { z-index:3; background:linear-gradient(0deg,#10151e 5%,rgba(16,21,30,.08) 90%),linear-gradient(90deg,rgba(16,21,30,.7),transparent 90%); }
       .hero-visual { width:109vw; top:38%; right:-34%; opacity:.85; }
+      .satellite-drift { left:14%; top:18%; scale:.62; }
+      .gyro, .field-note { display:none; }
       .hero-inner { padding:270px 24px 158px; }
       .hero h1 { font-size:clamp(57px,12vw,83px); letter-spacing:-.085em; }
       .hero .eyebrow { margin-bottom:20px; }
@@ -239,6 +272,15 @@
         <div class="planet-float"><div class="planet-system">
           <div class="hero-orbit second"></div><div class="hero-orbit"></div><div class="hero-planet"></div><div class="planet-ring"></div><div class="planet-moon"></div>
         </div></div>
+        <div class="scene-objects">
+          <div class="satellite-drift"><div class="satellite"><span class="solar-panel left"></span><span class="satellite-core"></span><span class="solar-panel right"></span></div></div>
+          <div class="gyro"><span class="gyro-ring"></span><span class="gyro-ring"></span><span class="gyro-core"></span></div>
+        </div>
+      </div>
+      <div class="field-note" aria-label="Saturn field note, 1.4 billion kilometers from Earth">
+        <div class="field-note-top"><span>Field note / 001</span><i aria-hidden="true"></i></div>
+        <div class="field-note-main"><span class="note-sphere" aria-hidden="true"></span><div><strong>Saturn</strong><small>The ringed world</small></div></div>
+        <div class="field-note-bottom"><span>Distance from Earth</span><span>1.4B KM</span></div>
       </div>
       <span class="hero-coordinate" aria-hidden="true">41° 24′ N &nbsp; / &nbsp; 02° 10′ E &nbsp; / &nbsp; BEYOND</span>
       <div class="hero-inner">
@@ -327,14 +369,24 @@
 
     const hero = document.querySelector('.hero');
     const system = document.querySelector('.planet-system');
+    const sceneObjects = document.querySelector('.scene-objects');
+    const fieldNote = document.querySelector('.field-note');
     if (!reducedMotion.matches && window.matchMedia('(pointer:fine)').matches) {
       hero.addEventListener('pointermove', event => {
         const x = event.clientX / hero.clientWidth - .5;
         const y = event.clientY / hero.clientHeight - .5;
         system.style.setProperty('--ry', `${(x * 12).toFixed(2)}deg`);
         system.style.setProperty('--rx', `${(-y * 10).toFixed(2)}deg`);
+        sceneObjects.style.setProperty('--px', `${(x * -35).toFixed(2)}px`);
+        sceneObjects.style.setProperty('--py', `${(y * -28).toFixed(2)}px`);
+        fieldNote.style.setProperty('--note-x', `${(x * 13).toFixed(2)}px`);
+        fieldNote.style.setProperty('--note-y', `${(y * 13).toFixed(2)}px`);
       });
-      hero.addEventListener('pointerleave', () => { system.style.setProperty('--ry','0deg'); system.style.setProperty('--rx','0deg'); });
+      hero.addEventListener('pointerleave', () => {
+        system.style.setProperty('--ry','0deg'); system.style.setProperty('--rx','0deg');
+        sceneObjects.style.setProperty('--px','0px'); sceneObjects.style.setProperty('--py','0px');
+        fieldNote.style.setProperty('--note-x','0px'); fieldNote.style.setProperty('--note-y','0px');
+      });
     }
 
     const worlds = {
