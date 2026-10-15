@@ -1,6 +1,7 @@
 # NewSample3017
 
-Land record digitization landing page with a document submission and verification flow.
+Elsewhere is an interactive space-themed landing page built with CSS 3D planet art,
+pointer parallax, scroll reveals, animated starfields, and selectable destinations.
 Dependency-free: plain Node built-ins, one static HTML page per route, no build step.
 
 ## Run with Docker
@@ -28,22 +29,21 @@ docker compose -f docker-compose.alloy.yaml restart site
 
 | Route                      | Purpose                                                      |
 | -------------------------- | ------------------------------------------------------------ |
-| `GET /`                    | Landing page (`index.html`)                                  |
-| `GET /verification?batch=` | Verification status page (`verification.html`)               |
+| `GET /`                    | Elsewhere experience (`index.html`)                           |
+| `GET /verification?batch=` | Legacy verification status page (`verification.html`)        |
 | `GET /assets/*`            | Images and illustrations                                     |
 | `GET /health`              | Health probe used by the compose healthcheck                 |
 | `POST /api/submissions`    | Create a submission batch, returns `{ id, reference }`       |
 | `GET /api/submissions/:id` | Batch status, pipeline stages, per-document extracted fields |
 
-## Submission flow
+## Legacy verification prototype
 
-1. The upload panel on the landing page accepts files by drag-and-drop or file picker,
-   enforcing a 25 MB per-file limit client side.
-2. Submitting posts the file names and sizes as JSON to `POST /api/submissions`.
-3. The browser is redirected to `/verification?batch=<id>`.
-4. That page polls `GET /api/submissions/:id` every 1.6s, advancing a five-stage pipeline
-   (received, OCR, AI verification, human review, GIS mapping) and rendering the extracted
-   fields, confidence score and validation checks for each document.
+The document submission UI was replaced by the Elsewhere homepage. The existing
+verification route and API remain in the server, but are not linked from the new page.
+
+The legacy API accepts file names and sizes at `POST /api/submissions` and returns
+a batch ID. `/verification?batch=<id>` polls `GET /api/submissions/:id` every 1.6s,
+advancing a simulated five-stage pipeline and displaying extracted fields and checks.
 
 ### Prototype limitations
 
